@@ -3,6 +3,7 @@ import random
 import sys
 import time
 
+random.seed(42)
 N = int(sys.argv[1]) if len(sys.argv) > 1 else 500
 
 USER_AGENTS = [
