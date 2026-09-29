@@ -11,3 +11,5 @@ __pycache__/
 
 # Log thô sinh ra khi chạy testbed
 data/raw/*.jsonl
+
+data/raw/*.log
