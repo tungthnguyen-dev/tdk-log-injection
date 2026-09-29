@@ -1,0 +1,13 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Mac
+.DS_Store
+
+# Bí mật (API key của cloud LLM)
+.env
+
+# Log thô sinh ra khi chạy testbed
+data/raw/*.jsonl
