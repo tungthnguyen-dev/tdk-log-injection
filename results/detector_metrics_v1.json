@@ -1,0 +1,29 @@
+{
+  "n_events": 700,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "false_positive_rate": 0.0,
+  "confusion_matrix": {
+    "tn": 500,
+    "fp": 0,
+    "fn": 0,
+    "tp": 200
+  },
+  "recall_by_attack_type": {
+    "path_scan": 1.0,
+    "sqli": 1.0,
+    "path_traversal": 1.0,
+    "scanner_ua": 1.0
+  },
+  "features": [
+    "uri_length",
+    "uri_entropy",
+    "uri_special_chars",
+    "status",
+    "ua_length",
+    "ua_known_scanner"
+  ],
+  "model": "RandomForestClassifier(n_estimators=200, random_state=42)",
+  "cv": "StratifiedGroupKFold(n_splits=5), out-of-fold predictions"
+}
