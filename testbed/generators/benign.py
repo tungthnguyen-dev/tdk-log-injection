@@ -52,7 +52,7 @@ def send(method, path, user_agent, referer, exp_id, body=None):
 for i in range(N):
     ua = random.choice(USER_AGENTS)
     if random.random() < 0.05:
-        # 5% là gửi form đăng nhập
+        # 5% are login form submissions
         status = send("POST", "/login", ua, "http://shop.local/login",
                       f"benign:{i}", body="user=alice&pass=secret")
     else:
@@ -61,6 +61,6 @@ for i in range(N):
     if i % 50 == 0:
         print(f"[benign] {i}/{N} last status {status}", flush=True)
 
-    time.sleep(random.uniform(0.05, 0.4))   # nghỉ ngẫu nhiên như người thật
+    time.sleep(random.uniform(0.05, 0.4))   # random pause, like a real user
 
 print(f"[benign] done, sent {N} requests", flush=True)
