@@ -1,0 +1,8 @@
+A machine-learning detector has analysed this event.
+Detector verdict: {detector_verdict} (probability {detector_proba})
+Top contributing features:
+{shap_features}
+
+<<<UNTRUSTED_LOG>>>
+{raw_log}
+<<<END_UNTRUSTED_LOG>>>
