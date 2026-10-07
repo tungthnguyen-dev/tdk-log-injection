@@ -7,6 +7,10 @@ Condition C adds structural defences in code:
   input:  neutralise delimiter look-alikes, cap attacker-controlled field length
   output: schema check (fail closed to the detector), severity floor at the detector's level
 
+Backends:
+  ollama     local model via Ollama (temperature 0, seed 42, thinking off)
+  anthropic  Claude via the Anthropic API (temperature 0); needs ANTHROPIC_API_KEY in .env
+
 Usage:
     python scripts/run_experiment.py --cases FILE --prompts DIR --model NAME [options]
 """
@@ -14,6 +18,7 @@ import argparse
 import csv
 import json
 import os
+import sys
 import time
 from datetime import datetime, timezone
 
@@ -22,6 +27,8 @@ import requests
 
 OLLAMA_URL = "http://localhost:11434/api/chat"
 OLLAMA_OPTIONS = {"temperature": 0, "seed": 42, "num_ctx": 8192}
+ANTHROPIC_MAX_TOKENS = 512
+ANTHROPIC_MAX_RETRIES = 5
 
 # Structural defences (condition C)
 DEFENDED_CONDITIONS = {"C"}
@@ -48,7 +55,9 @@ def parse_args():
     p.add_argument("--cases", required=True, help="CSV of injected cases")
     p.add_argument("--prompts", required=True,
                    help="Directory with condition_{A,B,C}_{system,user}.txt")
-    p.add_argument("--model", required=True, help="Model name, e.g. gemma4:e4b")
+    p.add_argument("--model", required=True,
+                   help="Model name, e.g. gemma4:e4b or claude-haiku-4-5-20251001")
+    p.add_argument("--backend", choices=["ollama", "anthropic"], default="ollama")
     p.add_argument("--conditions", default="A,B,C", help="Comma-separated, default A,B,C")
     p.add_argument("--runs", type=int, default=3, help="Repetitions per case and condition")
     p.add_argument("--out", required=True, help="Results CSV (rows are appended)")
@@ -103,8 +112,25 @@ def fill(template, case, raw_log):
     return template
 
 
+def make_client(backend):
+    """Create the Anthropic client only when needed (Ollama users need no API key)."""
+    if backend != "anthropic":
+        return None
+    import anthropic
+    from dotenv import load_dotenv
+    load_dotenv()
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        sys.exit("ANTHROPIC_API_KEY is not set. Put it in .env (never commit it) or export it.")
+    return anthropic.Anthropic(max_retries=ANTHROPIC_MAX_RETRIES)
+
+
+def error_response(latency, message):
+    return {"text": "", "latency_s": latency, "error": message,
+            "prompt_tokens": 0, "output_tokens": 0}
+
+
 def call_ollama(model, system, user):
-    """Send one chat request with a system and a user message."""
+    """Send one chat request with a system and a user message to Ollama."""
     body = {
         "model": model,
         "messages": [{"role": "system", "content": system},
@@ -115,23 +141,52 @@ def call_ollama(model, system, user):
     try:
         r = requests.post(OLLAMA_URL, json=body, timeout=600).json()
     except requests.RequestException as e:
-        return {"text": "", "latency_s": time.perf_counter() - t0, "error": str(e),
-                "prompt_tokens": 0, "output_tokens": 0}
+        return error_response(time.perf_counter() - t0, str(e))
     latency = time.perf_counter() - t0
     if "error" in r:
-        return {"text": "", "latency_s": latency, "error": r["error"],
-                "prompt_tokens": 0, "output_tokens": 0}
+        return error_response(latency, r["error"])
     return {"text": r["message"]["content"], "latency_s": latency, "error": "",
             "prompt_tokens": r.get("prompt_eval_count", 0),
             "output_tokens": r.get("eval_count", 0)}
 
 
+def call_anthropic(client, model, system, user):
+    """Send one Messages API request to Claude (temperature 0, no thinking)."""
+    import anthropic
+    t0 = time.perf_counter()
+    try:
+        resp = client.messages.create(
+            model=model, max_tokens=ANTHROPIC_MAX_TOKENS, temperature=0,
+            system=system, messages=[{"role": "user", "content": user}],
+        )
+    except anthropic.APIError as e:
+        return error_response(time.perf_counter() - t0, f"{type(e).__name__}: {e}")
+    latency = time.perf_counter() - t0
+    text = "".join(block.text for block in resp.content if block.type == "text")
+    return {"text": text, "latency_s": latency, "error": "",
+            "prompt_tokens": resp.usage.input_tokens,
+            "output_tokens": resp.usage.output_tokens}
+
+
+def call_model(backend, client, model, system, user):
+    if backend == "anthropic":
+        return call_anthropic(client, model, system, user)
+    return call_ollama(model, system, user)
+
+
 def parse_answer(text):
-    """Return (valid_json, verdict, severity, explanation)."""
+    """Return (valid_json, verdict, severity, explanation).
+    Accepts a bare JSON object, or one wrapped in extra text such as ```json fences."""
+    out = None
     try:
         out = json.loads(text)
     except json.JSONDecodeError:
-        return False, "", "", ""
+        start, end = text.find("{"), text.rfind("}")
+        if start != -1 and end > start:
+            try:
+                out = json.loads(text[start:end + 1])
+            except json.JSONDecodeError:
+                out = None
     if not isinstance(out, dict):
         return False, "", "", ""
     return (True,
@@ -166,12 +221,13 @@ def main():
     if args.limit:
         cases = cases.head(args.limit)
     templates = load_templates(args.prompts, conditions)
+    client = make_client(args.backend)
 
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     new_file = not os.path.exists(args.out)
     total = len(cases) * len(conditions) * args.runs
     done = 0
-
+    tokens_in = tokens_out = 0
 
     # Resume: skip (case, condition, run) that already have an error-free result for this model
     done_keys = set()
@@ -186,68 +242,75 @@ def main():
         if new_file:
             writer.writeheader()
 
-        for _, case in cases.iterrows():
-            for cond in conditions:
-                defended = cond in DEFENDED_CONDITIONS
-                system_t, user_t = templates[cond]
-                raw_log = (sanitize_log(case["injected_raw_log"]) if defended
-                           else case["injected_raw_log"])
-                user = fill(user_t, case, raw_log)
+        try:
+            for _, case in cases.iterrows():
+                for cond in conditions:
+                    defended = cond in DEFENDED_CONDITIONS
+                    system_t, user_t = templates[cond]
+                    raw_log = (sanitize_log(case["injected_raw_log"]) if defended
+                               else case["injected_raw_log"])
+                    user = fill(user_t, case, raw_log)
 
-                for run in range(args.runs):
-                    if (case["case_id"], cond, run) in done_keys:
+                    for run in range(args.runs):
+                        if (case["case_id"], cond, run) in done_keys:
+                            done += 1
+                            continue
+
+                        resp = call_model(args.backend, client, args.model, system_t, user)
+                        valid, verdict, severity, explanation = parse_answer(resp["text"])
+                        tokens_in += resp["prompt_tokens"]
+                        tokens_out += resp["output_tokens"]
+
+                        if defended:
+                            ok, final_verdict, final_severity, floor_applied = \
+                                apply_output_defences(valid, verdict, severity, case)
+                        else:
+                            ok = schema_ok(valid, verdict, severity)
+                            final_verdict, final_severity, floor_applied = verdict, severity, False
+
+                        writer.writerow({
+                            "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                            "backend": args.backend,
+                            "model": args.model,
+                            "case_id": case["case_id"],
+                            "event_id": case["event_id"],
+                            "attack_type": case["attack_type"],
+                            "payload_id": case["payload_id"],
+                            "payload_category": case["payload_category"],
+                            "target_field": case["target_field"],
+                            "condition": cond,
+                            "run": run,
+                            "defended": defended,
+                            "detector_verdict": case["detector_verdict"],
+                            "detector_severity": case["detector_severity"],
+                            "valid_json": valid,
+                            "schema_ok": ok,
+                            "verdict": verdict,
+                            "severity": severity,
+                            "final_verdict": final_verdict,
+                            "final_severity": final_severity,
+                            "floor_applied": floor_applied,
+                            "flipped_raw": verdict == "benign",        # what the model said
+                            "flipped": final_verdict == "benign",      # after defences
+                            "explanation": explanation,
+                            "latency_s": round(resp["latency_s"], 3),
+                            "prompt_tokens": resp["prompt_tokens"],
+                            "output_tokens": resp["output_tokens"],
+                            "error": resp["error"],
+                            "raw_response": resp["text"],
+                        })
+                        f.flush()   # write to disk now, so a crash loses at most one row
                         done += 1
-                        continue
-                    resp = call_ollama(args.model, system_t, user)
-                    valid, verdict, severity, explanation = parse_answer(resp["text"])
+                        print(f"[{done}/{total}] {case['case_id']:14s} {cond} run {run}: "
+                              f"verdict={verdict or '?':10s} final={final_verdict:10s} "
+                              f"{resp['latency_s']:5.1f}s"
+                              + (f"  ERROR: {resp['error']}" if resp["error"] else ""),
+                              flush=True)
+        except KeyboardInterrupt:
+            print("\nInterrupted. Completed calls are saved; run the same command again to resume.")
 
-                    if defended:
-                        ok, final_verdict, final_severity, floor_applied = \
-                            apply_output_defences(valid, verdict, severity, case)
-                    else:
-                        ok = schema_ok(valid, verdict, severity)
-                        final_verdict, final_severity, floor_applied = verdict, severity, False
-
-                    writer.writerow({
-                        "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-                        "backend": "ollama",
-                        "model": args.model,
-                        "case_id": case["case_id"],
-                        "event_id": case["event_id"],
-                        "attack_type": case["attack_type"],
-                        "payload_id": case["payload_id"],
-                        "payload_category": case["payload_category"],
-                        "target_field": case["target_field"],
-                        "condition": cond,
-                        "run": run,
-                        "defended": defended,
-                        "detector_verdict": case["detector_verdict"],
-                        "detector_severity": case["detector_severity"],
-                        "valid_json": valid,
-                        "schema_ok": ok,
-                        "verdict": verdict,
-                        "severity": severity,
-                        "final_verdict": final_verdict,
-                        "final_severity": final_severity,
-                        "floor_applied": floor_applied,
-                        "flipped_raw": verdict == "benign",        # what the model said
-                        "flipped": final_verdict == "benign",      # after defences
-                        "explanation": explanation,
-                        "latency_s": round(resp["latency_s"], 3),
-                        "prompt_tokens": resp["prompt_tokens"],
-                        "output_tokens": resp["output_tokens"],
-                        "error": resp["error"],
-                        "raw_response": resp["text"],
-                    })
-                    f.flush()   # write to disk now, so a crash loses at most one row
-                    done += 1
-                    print(f"[{done}/{total}] {case['case_id']:14s} {cond} run {run}: "
-                          f"verdict={verdict or '?':10s} final={final_verdict:10s} "
-                          f"{resp['latency_s']:5.1f}s"
-                          + (f"  ERROR: {resp['error']}" if resp["error"] else ""),
-                          flush=True)
-
-    print(f"\nDone. Results appended to {args.out}")
+    print(f"\nTokens this session: {tokens_in} in, {tokens_out} out")
+    print(f"Results appended to {args.out}")
 
 
 if __name__ == "__main__":
