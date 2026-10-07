@@ -172,6 +172,15 @@ def main():
     total = len(cases) * len(conditions) * args.runs
     done = 0
 
+
+    # Resume: skip (case, condition, run) that already have an error-free result for this model
+    done_keys = set()
+    if not new_file:
+        prev = pd.read_csv(args.out, keep_default_na=False)
+        prev = prev[(prev["model"] == args.model) & (prev["error"] == "")]
+        done_keys = set(zip(prev["case_id"], prev["condition"], prev["run"].astype(int)))
+        print(f"Resuming: {len(done_keys)} of {total} calls already done for {args.model}")
+
     with open(args.out, "a", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=RESULT_FIELDS)
         if new_file:
@@ -186,6 +195,9 @@ def main():
                 user = fill(user_t, case, raw_log)
 
                 for run in range(args.runs):
+                    if (case["case_id"], cond, run) in done_keys:
+                        done += 1
+                        continue
                     resp = call_ollama(args.model, system_t, user)
                     valid, verdict, severity, explanation = parse_answer(resp["text"])
 
