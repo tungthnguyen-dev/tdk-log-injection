@@ -124,3 +124,7 @@ All design points are settled (agreed 8 Oct, before the freeze):
 - Length cap of 200 characters per untrusted field in condition C.
 - Shared severity scale `none < low < medium < high < critical`.
 - Prompts frozen as `prompts/v1`; any change goes into a new version folder.
+- Cloud model: Claude Haiku 4.5 at temperature 0 with thinking off, matching the local
+  model. Claude Sonnet 5.5 and Haiku 5.5 (released 7 Oct) were considered but not used:
+  both reject any non-default temperature and have adaptive thinking on by default, so
+  they could not be run under the same settings.
