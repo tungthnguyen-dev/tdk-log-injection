@@ -1,6 +1,6 @@
-# Detector-grounded LLM explanations for security log analysis
+# Grounding LLM log analysis against prompt injection
 
-TDK project by Tung Nguyen and Bakhtier Abdullaev.
+TDK project by Bakhtier Abdullaev and The Hoang Tung Nguyen.
 
 We test whether giving an LLM the verdict and SHAP attributions of a small ML detector
 makes it harder to fool with prompt injection hidden in web server logs. Attackers control
@@ -12,13 +12,13 @@ same with structural defences) on a local model (gemma4:e4b via Ollama) and a cl
 ## Repository layout
 
 ```
-testbed/       isolated Docker testbed: nginx + small Flask app + traffic generators
 data/          frozen raw log, labelled events, experiment samples (see data/README.md)
-scripts/       parsing, sampling, detector, injected cases, benchmark, experiment runner
+docs/          threat model, runner usage, pilot notes
 payloads/      the 30 prompt injection payloads
 prompts/v1/    frozen system and user prompts for conditions A, B and C
 results/       benchmark, pilot and experiment results
-docs/          threat model, runner usage, pilot notes
+scripts/       parsing, sampling, detector, injected cases, benchmark, experiment runner
+testbed/       isolated Docker testbed: nginx + small Flask app + traffic generators
 ```
 
 ## Setup
