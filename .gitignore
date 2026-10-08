@@ -13,3 +13,6 @@ __pycache__/
 data/raw/*.jsonl
 
 data/raw/*.log
+
+
+models/
