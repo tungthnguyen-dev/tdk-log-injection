@@ -16,6 +16,7 @@ Usage:
 """
 import argparse
 import csv
+import hashlib
 import json
 import os
 import sys
@@ -39,7 +40,8 @@ LLM_SEVERITIES = {"low", "medium", "high", "critical"}
 SEVERITY_ORDER = ["none", "low", "medium", "high", "critical"]   # shared scale
 
 RESULT_FIELDS = [
-    "timestamp", "backend", "model", "case_id", "event_id", "attack_type",
+    "timestamp", "backend", "model", "prompt_version", "prompt_hash",
+    "case_id", "event_id", "attack_type",
     "payload_id", "payload_category", "target_field", "condition", "run", "defended",
     "detector_verdict", "detector_severity",
     "valid_json", "schema_ok", "verdict", "severity",
@@ -76,6 +78,9 @@ def load_templates(prompt_dir, conditions):
         templates[c] = (system, user)
     return templates
 
+def template_hash(system, user):
+    """Short SHA-256 of one condition's templates, to verify the frozen prompts were used."""
+    return hashlib.sha256((system + "\n---\n" + user).encode("utf-8")).hexdigest()[:12]
 
 def format_shap(shap_json):
     """Turn the shap_top5 JSON list into readable lines for the prompt."""
@@ -222,6 +227,10 @@ def main():
         cases = cases.head(args.limit)
     templates = load_templates(args.prompts, conditions)
     client = make_client(args.backend)
+    prompt_version = os.path.basename(os.path.normpath(args.prompts))
+    prompt_hashes = {c: template_hash(*templates[c]) for c in conditions}
+    print(f"Prompts: {prompt_version} " +
+          " ".join(f"{c}={h}" for c, h in prompt_hashes.items()))
 
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     new_file = not os.path.exists(args.out)
@@ -232,10 +241,17 @@ def main():
     # Resume: skip (case, condition, run) that already have an error-free result for this model
     done_keys = set()
     if not new_file:
+        with open(args.out) as fh:
+            header = fh.readline().strip().split(",")
+        if header != RESULT_FIELDS:
+            sys.exit(f"{args.out} has a different column layout (older runner version). "
+                     "Use a new --out file.")
         prev = pd.read_csv(args.out, keep_default_na=False)
-        prev = prev[(prev["model"] == args.model) & (prev["error"] == "")]
+        prev = prev[(prev["model"] == args.model) & (prev["error"] == "")
+                    & (prev["prompt_version"] == prompt_version)]
         done_keys = set(zip(prev["case_id"], prev["condition"], prev["run"].astype(int)))
-        print(f"Resuming: {len(done_keys)} of {total} calls already done for {args.model}")
+        print(f"Resuming: {len(done_keys)} of {total} calls already done "
+              f"for {args.model} with prompts {prompt_version}")
 
     with open(args.out, "a", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=RESULT_FIELDS)
@@ -272,6 +288,8 @@ def main():
                             "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                             "backend": args.backend,
                             "model": args.model,
+                            "prompt_version": prompt_version,
+                            "prompt_hash": prompt_hashes[cond],
                             "case_id": case["case_id"],
                             "event_id": case["event_id"],
                             "attack_type": case["attack_type"],
