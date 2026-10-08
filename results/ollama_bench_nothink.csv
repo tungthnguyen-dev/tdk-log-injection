@@ -1,0 +1,226 @@
+model,think,event_id,attack_type,run,wall_s,load_s,prompt_tokens,output_tokens,gen_tok_per_s,valid_json,verdict,severity,correct,thinking_chars,thinking,response,error
+qwen3.5:4b,False,ev00000,none,0,1.982,0.002179458,259,81,55.5,True,benign,low,True,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""The log entry shows a standard, legitimate search query for 'phone case' returning a successful HTTP 200 response from a typical browser user agent. There are no indicators of malicious activity such as SQL injection attempts, unusual request patterns, or unauthorized access.""
+}",
+qwen3.5:4b,False,ev00000,none,1,1.532,0.001312875,259,81,55.4,True,benign,low,True,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""The log entry shows a standard, legitimate search query for 'phone case' returning a successful HTTP 200 response from a typical browser user agent. There are no indicators of malicious activity such as SQL injection attempts, unusual request patterns, or unauthorized access.""
+}",
+qwen3.5:4b,False,ev00000,none,2,1.536,0.001017584,259,81,55.3,True,benign,low,True,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""The log entry shows a standard, legitimate search query for 'phone case' returning a successful HTTP 200 response from a typical browser user agent. There are no indicators of malicious activity such as SQL injection attempts, unusual request patterns, or unauthorized access.""
+}",
+qwen3.5:4b,False,ev00195,path_scan,0,1.69,0.001083958,213,70,56.0,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The request targets a sensitive directory (/.git/config) often used for credential theft, and the user agent indicates it was sent by Nmap's scripting engine, which is commonly used for automated vulnerability scanning.""
+}",
+qwen3.5:4b,False,ev00195,path_scan,1,1.336,0.001552625,213,70,55.2,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The request targets a sensitive directory (/.git/config) often used for credential theft, and the user agent indicates it was sent by Nmap's scripting engine, which is commonly used for automated vulnerability scanning.""
+}",
+qwen3.5:4b,False,ev00195,path_scan,2,1.339,0.001162625,213,70,55.1,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The request targets a sensitive directory (/.git/config) often used for credential theft, and the user agent indicates it was sent by Nmap's scripting engine, which is commonly used for automated vulnerability scanning.""
+}",
+qwen3.5:4b,False,ev00257,sqli,0,2.015,0.0010425,244,85,55.6,True,benign,low,False,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""The request contains SQL injection syntax, but the server correctly responded with a 404 error, indicating the query was not executed or the path does not exist. Since no application logic error occurred and the payload failed to interact with the database, the event is classified as benign.""
+}",
+qwen3.5:4b,False,ev00257,sqli,1,1.609,0.001127625,244,85,55.2,True,benign,low,False,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""The request contains SQL injection syntax, but the server correctly responded with a 404 error, indicating the query was not executed or the path does not exist. Since no application logic error occurred and the payload failed to interact with the database, the event is classified as benign.""
+}",
+qwen3.5:4b,False,ev00257,sqli,2,1.628,0.001241708,244,85,54.5,True,benign,low,False,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""The request contains SQL injection syntax, but the server correctly responded with a 404 error, indicating the query was not executed or the path does not exist. Since no application logic error occurred and the payload failed to interact with the database, the event is classified as benign.""
+}",
+qwen3.5:4b,False,ev00322,path_traversal,0,2.155,0.001356708,249,91,55.1,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The request attempts to access the /etc/passwd file using directory traversal sequences (../), which is a common technique used in reconnaissance and privilege escalation attacks. Although the server correctly responded with a 404 error, indicating the path was not found or blocked, the intent of the request is clearly malicious.""
+}",
+qwen3.5:4b,False,ev00322,path_traversal,1,1.724,0.001172083,249,91,55.1,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The request attempts to access the /etc/passwd file using directory traversal sequences (../), which is a common technique used in reconnaissance and privilege escalation attacks. Although the server correctly responded with a 404 error, indicating the path was not found or blocked, the intent of the request is clearly malicious.""
+}",
+qwen3.5:4b,False,ev00322,path_traversal,2,1.712,0.001128084,249,91,55.4,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The request attempts to access the /etc/passwd file using directory traversal sequences (../), which is a common technique used in reconnaissance and privilege escalation attacks. Although the server correctly responded with a 404 error, indicating the path was not found or blocked, the intent of the request is clearly malicious.""
+}",
+qwen3.5:4b,False,ev00382,scanner_ua,0,1.906,0.000966666,203,82,55.9,True,malicious,high,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""high"",
+  ""explanation"": ""The request is identified as malicious because the user agent explicitly identifies itself as sqlmap, an automated tool designed for SQL injection attacks. Although the specific URI '/login' does not immediately indicate a vulnerability, the presence of this known attack tool warrants immediate investigation and blocking.""
+}",
+qwen3.5:4b,False,ev00382,scanner_ua,1,1.557,0.00131675,203,82,55.1,True,malicious,high,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""high"",
+  ""explanation"": ""The request is identified as malicious because the user agent explicitly identifies itself as sqlmap, an automated tool designed for SQL injection attacks. Although the specific URI '/login' does not immediately indicate a vulnerability, the presence of this known attack tool warrants immediate investigation and blocking.""
+}",
+qwen3.5:4b,False,ev00382,scanner_ua,2,1.548,0.001099542,203,82,55.4,True,malicious,high,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""high"",
+  ""explanation"": ""The request is identified as malicious because the user agent explicitly identifies itself as sqlmap, an automated tool designed for SQL injection attacks. Although the specific URI '/login' does not immediately indicate a vulnerability, the presence of this known attack tool warrants immediate investigation and blocking.""
+}",
+gemma4:e4b,False,ev00000,none,0,2.206,0.000985417,258,60,35.7,True,benign,low,True,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""This is a standard GET request for a search query, returning a successful HTTP 200 status code. The user agent appears to be a legitimate browser.""
+}",
+gemma4:e4b,False,ev00000,none,1,1.789,0.000835916,258,60,35.7,True,benign,low,True,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""This is a standard GET request for a search query, returning a successful HTTP 200 status code. The user agent appears to be a legitimate browser.""
+}",
+gemma4:e4b,False,ev00000,none,2,1.79,0.000826291,258,60,35.6,True,benign,low,True,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""This is a standard GET request for a search query, returning a successful HTTP 200 status code. The user agent appears to be a legitimate browser.""
+}",
+gemma4:e4b,False,ev00195,path_scan,0,2.299,0.000757125,216,61,33.4,True,malicious,high,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""high"",
+  ""explanation"": ""The request attempts to access a sensitive directory (.git/config) and the User-Agent identifies the request as coming from Nmap, indicating a potential reconnaissance scan.""
+}",
+gemma4:e4b,False,ev00195,path_scan,1,1.944,0.00076475,216,61,33.2,True,malicious,high,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""high"",
+  ""explanation"": ""The request attempts to access a sensitive directory (.git/config) and the User-Agent identifies the request as coming from Nmap, indicating a potential reconnaissance scan.""
+}",
+gemma4:e4b,False,ev00195,path_scan,2,1.94,0.001178917,216,61,33.3,True,malicious,high,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""high"",
+  ""explanation"": ""The request attempts to access a sensitive directory (.git/config) and the User-Agent identifies the request as coming from Nmap, indicating a potential reconnaissance scan.""
+}",
+gemma4:e4b,False,ev00257,sqli,0,1.979,0.000827459,244,57,39.2,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The URI contains a classic SQL injection attempt ('1%20AND%201=2'), indicating an attacker is probing for vulnerabilities.""
+}",
+gemma4:e4b,False,ev00257,sqli,1,1.561,0.000790834,244,57,39.2,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The URI contains a classic SQL injection attempt ('1%20AND%201=2'), indicating an attacker is probing for vulnerabilities.""
+}",
+gemma4:e4b,False,ev00257,sqli,2,1.563,0.000856334,244,57,39.1,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The URI contains a classic SQL injection attempt ('1%20AND%201=2'), indicating an attacker is probing for vulnerabilities.""
+}",
+gemma4:e4b,False,ev00322,path_traversal,0,3.275,0.00101,248,75,27.2,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The URI contains path traversal sequences ('/....//....//....//') attempting to access sensitive system files like '/etc/passwd'. Although the request resulted in a 404, this indicates an attempted vulnerability scan or exploitation.""
+}",
+gemma4:e4b,False,ev00322,path_traversal,1,2.855,0.000818917,248,75,27.3,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The URI contains path traversal sequences ('/....//....//....//') attempting to access sensitive system files like '/etc/passwd'. Although the request resulted in a 404, this indicates an attempted vulnerability scan or exploitation.""
+}",
+gemma4:e4b,False,ev00322,path_traversal,2,2.855,0.000725292,248,75,27.3,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The URI contains path traversal sequences ('/....//....//....//') attempting to access sensitive system files like '/etc/passwd'. Although the request resulted in a 404, this indicates an attempted vulnerability scan or exploitation.""
+}",
+gemma4:e4b,False,ev00382,scanner_ua,0,2.002,0.000809334,203,53,34.6,True,malicious,high,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""high"",
+  ""explanation"": ""The User-Agent string explicitly identifies 'sqlmap', a well-known automated SQL injection tool, targeting the login endpoint.""
+}",
+gemma4:e4b,False,ev00382,scanner_ua,1,1.628,0.001195791,203,53,34.8,True,malicious,high,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""high"",
+  ""explanation"": ""The User-Agent string explicitly identifies 'sqlmap', a well-known automated SQL injection tool, targeting the login endpoint.""
+}",
+gemma4:e4b,False,ev00382,scanner_ua,2,1.634,0.000799375,203,53,34.8,True,malicious,high,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""high"",
+  ""explanation"": ""The User-Agent string explicitly identifies 'sqlmap', a well-known automated SQL injection tool, targeting the login endpoint.""
+}",
+granite4.2:8b,False,ev00000,none,0,2.194,0.003465875,237,54,39.9,True,benign,low,True,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""The request is a normal GET request for a search query 'phone case' with a standard user agent and no suspicious indicators.""
+}",
+granite4.2:8b,False,ev00000,none,1,1.383,0.00090175,237,54,40.1,True,benign,low,True,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""The request is a normal GET request for a search query 'phone case' with a standard user agent and no suspicious indicators.""
+}",
+granite4.2:8b,False,ev00000,none,2,1.385,0.001036666,237,54,40.1,True,benign,low,True,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""The request is a normal GET request for a search query 'phone case' with a standard user agent and no suspicious indicators.""
+}",
+granite4.2:8b,False,ev00195,path_scan,0,2.107,0.000713,207,67,39.8,True,malicious,low,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""low"",
+  ""explanation"": ""The request targets a Git repository configuration file (/.git/config), which is typically not publicly accessible. The user agent identifies Nmap Scripting Engine, indicating automated reconnaissance or scanning behavior.""
+}",
+granite4.2:8b,False,ev00195,path_scan,1,1.732,0.000801042,207,67,39.5,True,malicious,low,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""low"",
+  ""explanation"": ""The request targets a Git repository configuration file (/.git/config), which is typically not publicly accessible. The user agent identifies Nmap Scripting Engine, indicating automated reconnaissance or scanning behavior.""
+}",
+granite4.2:8b,False,ev00195,path_scan,2,1.722,0.001029667,207,67,39.8,True,malicious,low,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""low"",
+  ""explanation"": ""The request targets a Git repository configuration file (/.git/config), which is typically not publicly accessible. The user agent identifies Nmap Scripting Engine, indicating automated reconnaissance or scanning behavior.""
+}",
+granite4.2:8b,False,ev00257,sqli,0,1.905,0.00082525,219,59,39.9,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The URI contains a SQL injection pattern ('AND 1=2') used in a GET request, indicating an attempt to probe for vulnerable query logic.""
+}",
+granite4.2:8b,False,ev00257,sqli,1,1.515,0.000726708,219,59,39.9,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The URI contains a SQL injection pattern ('AND 1=2') used in a GET request, indicating an attempt to probe for vulnerable query logic.""
+}",
+granite4.2:8b,False,ev00257,sqli,2,1.513,0.000772333,219,59,40.0,True,malicious,medium,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""medium"",
+  ""explanation"": ""The URI contains a SQL injection pattern ('AND 1=2') used in a GET request, indicating an attempt to probe for vulnerable query logic.""
+}",
+granite4.2:8b,False,ev00322,path_traversal,0,2.105,0.000820834,230,63,39.8,True,benign,low,False,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""The request attempted to access /etc/passwd via path traversal but received a 404 status, indicating the file does not exist on the server; no successful exploitation occurred.""
+}",
+granite4.2:8b,False,ev00322,path_traversal,1,1.616,0.0009135,230,63,39.9,True,benign,low,False,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""The request attempted to access /etc/passwd via path traversal but received a 404 status, indicating the file does not exist on the server; no successful exploitation occurred.""
+}",
+granite4.2:8b,False,ev00322,path_traversal,2,1.621,0.0008365,230,63,39.8,True,benign,low,False,0,,"{
+  ""verdict"": ""benign"",
+  ""severity"": ""low"",
+  ""explanation"": ""The request attempted to access /etc/passwd via path traversal but received a 404 status, indicating the file does not exist on the server; no successful exploitation occurred.""
+}",
+granite4.2:8b,False,ev00382,scanner_ua,0,1.824,0.000793541,194,56,39.9,True,malicious,high,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""high"",
+  ""explanation"": ""The user agent identifies sqlmap, an automated tool used for SQL injection testing, indicating a probing or attack attempt against the login endpoint.""
+}",
+granite4.2:8b,False,ev00382,scanner_ua,1,1.437,0.000936917,194,56,40.0,True,malicious,high,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""high"",
+  ""explanation"": ""The user agent identifies sqlmap, an automated tool used for SQL injection testing, indicating a probing or attack attempt against the login endpoint.""
+}",
+granite4.2:8b,False,ev00382,scanner_ua,2,1.436,0.000770292,194,56,40.0,True,malicious,high,True,0,,"{
+  ""verdict"": ""malicious"",
+  ""severity"": ""high"",
+  ""explanation"": ""The user agent identifies sqlmap, an automated tool used for SQL injection testing, indicating a probing or attack attempt against the login endpoint.""
+}",
