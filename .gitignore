@@ -15,4 +15,6 @@ data/raw/*.jsonl
 data/raw/*.log
 
 
-models/data/external/
+models/
+
+data/external/
