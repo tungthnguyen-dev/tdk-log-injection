@@ -16,3 +16,5 @@ data/raw/*.log
 
 
 models/
+
+data/external/
