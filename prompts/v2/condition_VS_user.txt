@@ -1,0 +1,11 @@
+Our machine-learning detector has analysed this event.
+Detector verdict: {detector_verdict}
+Top contributing features (positive SHAP pushes towards attack, negative towards benign):
+{shap_features}
+
+Feature meanings: uri_length, uri_entropy and uri_special_chars describe the request URI; status is the HTTP status code; ua_length is the User-Agent length; ua_known_scanner is 1 if the User-Agent names a known scanning tool.
+
+Use the detector output as evidence together with the log event.
+
+Log event:
+{raw_log}

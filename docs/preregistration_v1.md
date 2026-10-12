@@ -1,11 +1,10 @@
 # Pre-registration v1: explanation-mediated injection study
 
-**Status: DRAFT for review by both authors.** Drafted 9 Oct 2026, revised 11 Oct 2026.
-Commit as `docs/preregistration_v1.md` and tag `prereg-v1` BEFORE any output of the new arms exists
+**Status: FINAL v1, 12 Oct 2026.** Drafted 9 Oct 2026 (Tung), revised 11-12 Oct 2026 (Bakhtier).
+Committed together with `prompts/v2` and tagged `prereg-v1` before any output of the new arms existed
 (B′, BCLEAN, V, VP, VS, PLACEBO, DWRONG, DOSE) and before any further summary of the gemma4:e2b
-or gemma4:12b runs is computed (Section 1 lists what was already seen). Push the tag and open a PR, so GitHub records the time independently of the local
-commit date. The prompt `v2` hashes are added once, as a dated addendum at the end, before the first
-new-arm call. Later changes go in "Deviations", dated, never as silent edits.
+or gemma4:12b runs (Section 1 lists what was already seen). The tag and the GitHub push time are the
+evidence of timing. Later changes go in "Deviations", dated, never as silent edits.
 
 Authors: Bakhtier Abdullaev, The Hoang Tung Nguyen
 
@@ -25,8 +24,10 @@ Known before any new LLM output, from the detector side only (`injected_cases_v1
 | URI | 192 | 92 (47.9%), up in 52, down in 40 | +0.017 | 0 | 0.99 |
 | Referer | 240 | 0 (detector block identical in 240/240) | 0 | 0 | — |
 
-The detector verdict is "attack" in all 1,440 payload cases. The detector's severity is never shown
-to the LLM in any prompt; it is used only by condition C's severity floor.
+The detector verdict is "attack" in all 1,440 payload cases. The SHAP lines differ from the clean
+event's in all 1,200 User-Agent and URI cases, because the feature values change even where the
+probability does not. The detector's severity is never shown to the LLM in any prompt; it is used only
+by condition C's severity floor.
 
 ## 1. What the authors had already seen when this was written
 
@@ -34,16 +35,17 @@ to the LLM in any prompt; it is used only by condition C's severity floor.
 |---|---|---|
 | Pilot (4 events x 31 cases, Haiku 4.5 and gemma4:e4b) | both | flip rates, per-case outputs |
 | gemma4:e4b full A/B/C run (1,488 cases x 3 conditions) | Tung; Bakhtier from 11 Oct | Tung: summary tables (flips by condition, category, field, attack type; floor statistics; latency). Bakhtier: the abstract numbers (below) |
-| Claude Haiku 4.5 full A/B/C runs (3 runs) | Bakhtier; Tung via the abstract check (11-12 Oct) | summary numbers in the plan document (flip rates by condition and field, clean-attack misses) |
+| Claude Haiku 4.5 full A/B/C runs (3 runs) | Bakhtier; Tung only from 12 Oct, via the abstract | Bakhtier: summary numbers in the plan document (flip rates by condition and field, clean-attack misses). Tung: nothing before the abstract (his 9 Oct draft lists Bakhtier only) |
 | Abstract numbers, 11 Oct (`scripts/abstract_numbers.py`) | both | for Haiku and e4b only: payload-induced and raw flip rates per condition, B-A, C-A and C-B with cluster-bootstrap CIs, clean-attack accuracy, benign false positives, payload-induced flips by field (A and B) |
-| gemma4:e2b and gemma4:12b full A/B/C runs | Tung; Bakhtier [CONFIRM] | Tung, 9 Oct: row counts, errors, prompt hashes and the malicious/benign verdict totals per condition, for the attack and benign files, printed by `scripts/check_runs.py` as run that day (the committed version of the script has no verdict-count lines); plus the verdict stream on the console during the runs. No flip rate, payload-induced flip, B-A difference, CI, or field or family split was computed. Bakhtier: [CONFIRM what, if anything, you saw] |
+| gemma4:e2b and gemma4:12b full A/B/C runs | both | Tung, 9 Oct: row counts, errors, prompt hashes and the malicious/benign verdict totals per condition, for the attack and benign files, printed by `scripts/check_runs.py` as run that day (the committed version of the script has no verdict-count lines); plus the verdict stream on the console during the runs. He computed no flip rate, payload-induced flip, B-A difference, CI, or field or family split. Bakhtier: some numbers from these files, namely prompt hashes and the malicious/benign verdict totals per condition |
 | qwen3.5:9b | Tung | 21-call smoke test (7 cases x 3 conditions), run twice; used only to check validity, thinking leakage and latency |
 | BCLEAN | Tung | one 3-case technical check on one event (pipeline test); outputs not analysed |
 | Detector outputs on all injected cases (Section 0) | both | inputs to the LLM, not outcomes |
 | SR-BH 2020 slice v1 | Tung | 500 converted events and their dataset labels; no LLM output |
 
-An AI assistant helped revise this text on 11 Oct. It read prompts, code and case files, and later that
-day computed the abstract numbers above from the Haiku and gemma4:e4b files only. It did not read the
+An AI assistant helped revise this text on 11-12 Oct and wrote the `prompts/v2` templates and the
+B-clean cases file. It read prompts, code and case files, and on 11 Oct computed the abstract numbers
+above from the Haiku and gemma4:e4b files only. It did not read the
 e2b, 12b or qwen3.5 result files.
 
 Consequence: **H2** (both anchors) and all new arms are blind. H1, H3 and H4 concern A/B/C data that
@@ -106,6 +108,9 @@ prompt shows the severity, so it would not lie between VP and B.
 
 BCLEAN caveat: the SHAP lines show the clean event's feature values (for example `ua_length`), which may
 not match the injected log the LLM reads. This is part of the counterfactual and is reported.
+The runner builds BCLEAN itself (`--conditions BCLEAN` on `injected_cases_v1.csv`). The same join is
+frozen in `data/processed/injected_cases_bclean_v1.csv` (`scripts/make_bclean_cases.py`) as a record and a
+cross-check: the detector columns of every BCLEAN result row must equal that file's.
 
 **Case sets and runs**
 
@@ -251,7 +256,21 @@ in User-Agent payloads, is near zero for URI and is zero by construction for Ref
 
 ## Addendum: prompt v2 hashes
 
-(to be added, dated, before the first new-arm call: hash of each v2 template, and confirmation that v2 B = 4350a5ffdbd9)
+12 Oct 2026, before any new-arm call. Hashes as computed by the runner (`template_hash`: SHA-256 of
+system + "\n---\n" + user, first 12 hex characters). The v2 A, B and C files are byte-identical copies of v1.
+The V, VP, VS and PLACEBO system prompts are copies of the A/B system prompt.
+
+| Template | Hash | Note |
+|---|---|---|
+| A | dabe2e8c7d3b | = v1 |
+| B | 4350a5ffdbd9 | = v1; used by B′, BCLEAN and DWRONG |
+| C | 6cac0110e162 | = v1 |
+| V | 8ab34d7ddac5 | verdict only |
+| VP | 0fd8823d3e50 | verdict + probability; also used by DOSE |
+| VS | a818d29e7b86 | verdict + SHAP |
+| PLACEBO | 64f5b9f47890 | 13 lines before the log, as in B; 675 characters vs 663-675 for B |
+
+The runner registry must map condition VS to template VS (it named it VPS before this revision).
 
 ## Deviations
 
