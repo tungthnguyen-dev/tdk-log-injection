@@ -274,4 +274,4 @@ The runner registry must map condition VS to template VS (it named it VPS before
 
 ## Deviations
 
-(none yet; each entry: date, what changed, why, whether any outcome data had been seen)
+- 12 Oct 2026: two runner processes overlapped for about 2 minutes; 36 Haiku calls were duplicated; the analysis keeps the earliest error-free row per case, condition and run; no outcome data had been looked at.
