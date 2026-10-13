@@ -1,0 +1,7 @@
+Our machine-learning detector has analysed this event.
+Detector verdict: {detector_verdict}
+
+Use the detector output as evidence together with the log event.
+
+Log event:
+{raw_log}
