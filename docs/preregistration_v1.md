@@ -275,3 +275,4 @@ The runner registry must map condition VS to template VS (it named it VPS before
 ## Deviations
 
 - 12 Oct 2026: two runner processes overlapped for about 2 minutes; 36 Haiku calls were duplicated; the analysis keeps the earliest error-free row per case, condition and run; no outcome data had been looked at.
+- 14 Oct 2026: the SR-BH labels were checked by hand by Bakhtier alone, not by both authors (all 500 rows: 327 agree, 145 disagree, 28 unsure). An AI assistant provided the checking rules beforehand and ran a consistency check afterwards; following that check, 8 benign rows (scanner User-Agent, 404, no payload) were changed from agree to disagree to match the rule used for similar rows. No LLM output on SR-BH existed.
