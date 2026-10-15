@@ -328,7 +328,7 @@ def dose_trend(pc, model):
         y = (frame["Y"] >= 0.5).astype(int)
         if y.nunique() < 2:
             return 0.0
-        m = LogisticRegression(penalty=None, max_iter=1000).fit(frame[["p_shown"]], y)
+        m = LogisticRegression(C=np.inf, max_iter=1000).fit(frame[["p_shown"]], y)   # unpenalised
         return float(m.coef_[0, 0])
     est = slope(d)
     idx = np.random.default_rng(SEED).integers(0, len(events), size=(2000, len(events)))
@@ -445,8 +445,11 @@ def main():
             for name, a1, a0 in [("VP-V", "VP", "V"), ("B-VS", "B", "VS"), ("VS-V", "VS", "V"),
                                  ("B-VP", "B", "VP"), ("PLACEBO-A", "PLACEBO", "A"), ("PLACEBO-B", "PLACEBO", "B"),
                                  ("V-A", "V", "A")]:
-                if {a1, a0} <= mc:
-                    explo[f"{model} {name}"] = arm_contrast(df, pc, name, model, a1, a0)["primary"]
+                if {a1, a0} <= mc:    # all sensitivity analyses kept (Deviations 15 Oct, item c)
+                    r = arm_contrast(df, pc, name, model, a1, a0)
+                    explo[f"{model} {name}"] = {**r["primary"], "raw_flip": r["raw_flip"],
+                                                "control_gated": r["control_gated"],
+                                                "control_gated_events": r["control_gated_events"]}
             if {"V", "VP", "VS", "B"} <= mc:      # interaction (B - VS) - (VP - V)
                 w = wide(pc, model, ["V", "VP", "VS", "B"])
                 w["I"] = (w["B"] - w["VS"]) - (w["VP"] - w["V"])
@@ -475,6 +478,9 @@ def main():
         print("\nExploratory (Benjamini-Hochberg):")
         for k, v in explo.items():
             print(f"  {k:45s} {fmt(v)}  BH p={v['bh_p']:.4f}")
+            for s in ["raw_flip", "control_gated"]:
+                if v.get(s):
+                    print(f"      {s:15s} {fmt(v[s])}")
         print("\nDOSE:", json.dumps(results["dose"]))
         print("DWRONG:", json.dumps(results["dwrong"]))
 
