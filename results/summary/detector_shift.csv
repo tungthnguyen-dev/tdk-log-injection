@@ -1,0 +1,4 @@
+target_field,cases,severity_lowered_pct,dproba_mean,dproba_min
+referer,240,0.0,0.0,0.0
+uri,192,0.0,0.017,-0.01
+user_agent,1008,77.7,-0.143,-0.325
