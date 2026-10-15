@@ -305,6 +305,15 @@ def floor_erosion(df):
     return out
 
 
+def referer_check(df, model, arm1, arm0):
+    """H2 sanity check: on Referer cases the two prompts are byte-identical (the detector ignores the Referer),
+    so the share of identical answers measures run-to-run noise (Haiku) or must be 100% (deterministic model)."""
+    d = df[(df["model"] == model) & (df["target_field"] == "referer") & df["condition"].isin([arm1, arm0])]
+    w = d.pivot_table(index=["case_id", "run"], columns="condition", values="ans", aggfunc="first").dropna()
+    same = int((w[arm1] == w[arm0]).sum())
+    return {"pairs": len(w), "same_answer": same, "share_same": same / len(w) if len(w) else float("nan")}
+
+
 def dose_trend(pc, model):
     """Exploratory: logistic slope of Y on the shown probability; event-cluster bootstrap (2,000 resamples)."""
     from sklearn.linear_model import LogisticRegression
@@ -449,6 +458,20 @@ def main():
         results["exploratory"] = explo
         results["dose"] = {m: dose_trend(pc, m) for m in [H, E]}
         results["dwrong"] = dwrong(df)
+        if "H2-Haiku" in conf:
+            results["h2_haiku_by_field"] = by_field(pc, H, "BPRIME", "BCLEAN")
+            results["h2_haiku_referer_check"] = referer_check(df, H, "BPRIME", "BCLEAN")
+        if "H2-e4b" in conf:
+            results["h2_e4b_by_field"] = by_field(pc, E, "B", "BCLEAN")
+            results["h2_e4b_referer_check"] = referer_check(df, E, "B", "BCLEAN")
+        for k in ["h2_haiku_by_field", "h2_e4b_by_field"]:
+            if k in results:
+                print(f"\n{k}:")
+                for f_, r_ in results[k].items():
+                    print(f"  {f_:10s} {fmt(r_)}")
+        for k in ["h2_haiku_referer_check", "h2_e4b_referer_check"]:
+            if k in results:
+                print(f"{k}: {results[k]}")
         print("\nExploratory (Benjamini-Hochberg):")
         for k, v in explo.items():
             print(f"  {k:45s} {fmt(v)}  BH p={v['bh_p']:.4f}")
