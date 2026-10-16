@@ -2,11 +2,11 @@
 <rect width="760" height="504" fill="#ffffff"/>
 <text x="24.0" y="30.0" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#0b0b0b" text-anchor="start" font-weight="bold">Claude Haiku 4.5: effect of each part of the detector block on flips</text>
 <text x="24.0" y="50.0" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#52514e" text-anchor="start" font-weight="normal">Difference in flip rate between two prompt arms, percentage points, with 95% event-cluster bootstrap CI</text>
-<line x1="24.0" y1="68.0" x2="40.0" y2="68.0" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
-<circle cx="32.0" cy="68.0" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<line x1="24.0" y1="68.0" x2="40.0" y2="68.0" stroke="#eda100" stroke-width="2" stroke-linecap="round"/>
+<circle cx="32.0" cy="68.0" r="4.5" fill="#eda100" stroke="#ffffff" stroke-width="2"/>
 <text x="48.0" y="72.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#52514e" text-anchor="start" font-weight="normal">Control-gated: events whose clean control was judged malicious in both arms</text>
-<line x1="24.0" y1="85.0" x2="40.0" y2="85.0" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
-<circle cx="32.0" cy="85.0" r="4.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<line x1="24.0" y1="85.0" x2="40.0" y2="85.0" stroke="#9a9993" stroke-width="2" stroke-linecap="round"/>
+<circle cx="32.0" cy="85.0" r="4.5" fill="#9a9993" stroke="#ffffff" stroke-width="2"/>
 <text x="48.0" y="89.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#52514e" text-anchor="start" font-weight="normal">Primary: payload-induced flip, all events</text>
 <line x1="338.2" y1="104.0" x2="338.2" y2="440.0" stroke="#e6e5e1" stroke-width="1" stroke-linecap="round"/>
 <text x="338.2" y="458.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#52514e" text-anchor="middle" font-weight="normal">−12</text>
@@ -25,44 +25,44 @@
 <text x="720.0" y="478.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#52514e" text-anchor="end" font-weight="normal">more flips →</text>
 <text x="24.0" y="128.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="bold">Confirmatory</text>
 <text x="36.0" y="159.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="normal">H1  Grounding: B − A</text>
-<line x1="524.8" y1="149.0" x2="606.5" y2="149.0" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
-<circle cx="567.3" cy="149.0" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<line x1="413.9" y1="161.0" x2="610.6" y2="161.0" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
-<circle cx="514.2" cy="161.0" r="4.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<line x1="524.8" y1="149.0" x2="606.5" y2="149.0" stroke="#eda100" stroke-width="2" stroke-linecap="round"/>
+<circle cx="567.3" cy="149.0" r="4.5" fill="#eda100" stroke="#ffffff" stroke-width="2"/>
+<line x1="413.9" y1="161.0" x2="610.6" y2="161.0" stroke="#9a9993" stroke-width="2" stroke-linecap="round"/>
+<circle cx="514.2" cy="161.0" r="4.5" fill="#9a9993" stroke="#ffffff" stroke-width="2"/>
 <text x="36.0" y="193.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="normal">H2  Detector channel: B′ − BCLEAN</text>
-<line x1="540.0" y1="183.0" x2="577.9" y2="183.0" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
-<circle cx="558.2" cy="183.0" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<line x1="542.1" y1="195.0" x2="575.3" y2="195.0" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
-<circle cx="559.3" cy="195.0" r="4.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<line x1="540.0" y1="183.0" x2="577.9" y2="183.0" stroke="#eda100" stroke-width="2" stroke-linecap="round"/>
+<circle cx="558.2" cy="183.0" r="4.5" fill="#eda100" stroke="#ffffff" stroke-width="2"/>
+<line x1="542.1" y1="195.0" x2="575.3" y2="195.0" stroke="#9a9993" stroke-width="2" stroke-linecap="round"/>
+<circle cx="559.3" cy="195.0" r="4.5" fill="#9a9993" stroke="#ffffff" stroke-width="2"/>
 <text x="24.0" y="226.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="bold">Exploratory: parts of the detector block</text>
 <text x="36.0" y="257.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="normal">Verdict only vs no detector: V − A</text>
-<line x1="612.6" y1="247.0" x2="672.4" y2="247.0" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
-<circle cx="643.0" cy="247.0" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<line x1="616.8" y1="259.0" x2="694.5" y2="259.0" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
-<circle cx="652.6" cy="259.0" r="4.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<line x1="612.6" y1="247.0" x2="672.4" y2="247.0" stroke="#eda100" stroke-width="2" stroke-linecap="round"/>
+<circle cx="643.0" cy="247.0" r="4.5" fill="#eda100" stroke="#ffffff" stroke-width="2"/>
+<line x1="616.8" y1="259.0" x2="694.5" y2="259.0" stroke="#9a9993" stroke-width="2" stroke-linecap="round"/>
+<circle cx="652.6" cy="259.0" r="4.5" fill="#9a9993" stroke="#ffffff" stroke-width="2"/>
 <text x="36.0" y="291.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="normal">Add probability: VP − V</text>
-<line x1="544.6" y1="281.0" x2="585.7" y2="281.0" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
-<circle cx="564.4" cy="281.0" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<line x1="547.4" y1="293.0" x2="584.5" y2="293.0" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
-<circle cx="564.6" cy="293.0" r="4.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<line x1="544.6" y1="281.0" x2="585.7" y2="281.0" stroke="#eda100" stroke-width="2" stroke-linecap="round"/>
+<circle cx="564.4" cy="281.0" r="4.5" fill="#eda100" stroke="#ffffff" stroke-width="2"/>
+<line x1="547.4" y1="293.0" x2="584.5" y2="293.0" stroke="#9a9993" stroke-width="2" stroke-linecap="round"/>
+<circle cx="564.6" cy="293.0" r="4.5" fill="#9a9993" stroke="#ffffff" stroke-width="2"/>
 <text x="36.0" y="325.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="normal">Add SHAP: VS − V</text>
-<line x1="490.6" y1="315.0" x2="586.9" y2="315.0" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
-<circle cx="537.9" cy="315.0" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<line x1="337.9" y1="327.0" x2="519.5" y2="327.0" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
-<circle cx="434.7" cy="327.0" r="4.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<line x1="490.6" y1="315.0" x2="586.9" y2="315.0" stroke="#eda100" stroke-width="2" stroke-linecap="round"/>
+<circle cx="537.9" cy="315.0" r="4.5" fill="#eda100" stroke="#ffffff" stroke-width="2"/>
+<line x1="337.9" y1="327.0" x2="519.5" y2="327.0" stroke="#9a9993" stroke-width="2" stroke-linecap="round"/>
+<circle cx="434.7" cy="327.0" r="4.5" fill="#9a9993" stroke="#ffffff" stroke-width="2"/>
 <text x="36.0" y="359.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="normal">Add SHAP to VP: B − VP</text>
-<line x1="456.4" y1="349.0" x2="527.0" y2="349.0" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
-<circle cx="492.0" cy="349.0" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<line x1="330.0" y1="361.0" x2="532.8" y2="361.0" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
-<circle cx="431.6" cy="361.0" r="4.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<line x1="456.4" y1="349.0" x2="527.0" y2="349.0" stroke="#eda100" stroke-width="2" stroke-linecap="round"/>
+<circle cx="492.0" cy="349.0" r="4.5" fill="#eda100" stroke="#ffffff" stroke-width="2"/>
+<line x1="330.0" y1="361.0" x2="532.8" y2="361.0" stroke="#9a9993" stroke-width="2" stroke-linecap="round"/>
+<circle cx="431.6" cy="361.0" r="4.5" fill="#9a9993" stroke="#ffffff" stroke-width="2"/>
 <text x="36.0" y="393.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="normal">Add probability to VS: B − VS</text>
-<line x1="462.3" y1="383.0" x2="535.7" y2="383.0" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
-<circle cx="501.5" cy="383.0" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<line x1="495.7" y1="395.0" x2="644.2" y2="395.0" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
-<circle cx="561.5" cy="395.0" r="4.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<line x1="462.3" y1="383.0" x2="535.7" y2="383.0" stroke="#eda100" stroke-width="2" stroke-linecap="round"/>
+<circle cx="501.5" cy="383.0" r="4.5" fill="#eda100" stroke="#ffffff" stroke-width="2"/>
+<line x1="495.7" y1="395.0" x2="644.2" y2="395.0" stroke="#9a9993" stroke-width="2" stroke-linecap="round"/>
+<circle cx="561.5" cy="395.0" r="4.5" fill="#9a9993" stroke="#ffffff" stroke-width="2"/>
 <text x="36.0" y="427.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0b0b0b" text-anchor="start" font-weight="normal">Empty detector box: PLACEBO − A</text>
-<line x1="482.4" y1="417.0" x2="562.3" y2="417.0" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
-<circle cx="523.4" cy="417.0" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
-<line x1="459.4" y1="429.0" x2="592.9" y2="429.0" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
-<circle cx="526.6" cy="429.0" r="4.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<line x1="482.4" y1="417.0" x2="562.3" y2="417.0" stroke="#eda100" stroke-width="2" stroke-linecap="round"/>
+<circle cx="523.4" cy="417.0" r="4.5" fill="#eda100" stroke="#ffffff" stroke-width="2"/>
+<line x1="459.4" y1="429.0" x2="592.9" y2="429.0" stroke="#9a9993" stroke-width="2" stroke-linecap="round"/>
+<circle cx="526.6" cy="429.0" r="4.5" fill="#9a9993" stroke="#ffffff" stroke-width="2"/>
 </svg>

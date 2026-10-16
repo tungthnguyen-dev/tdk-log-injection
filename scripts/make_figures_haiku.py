@@ -17,8 +17,9 @@ H = "claude-haiku-4-5-20251001"
 
 # Reference palette (dataviz skill): surface, text tokens, two categorical slots, blue ramp steps
 SURFACE, INK, INK2, GRID, AXIS = "#ffffff", "#0b0b0b", "#52514e", "#e6e5e1", "#8f8e89"
-BLUE, ORANGE = "#2a78d6", "#eb6834"
-BLUE_LIGHT, BLUE_DARK = "#86b6ef", "#1c5cab"
+BLUE = "#2a78d6"     # Gemma 4 e4b in the combined figures
+YELLOW = "#eda100"   # Claude Haiku 4.5 (palette yellow); blue + yellow is a colour-blind-safe pair
+GRAY = "#9a9993"     # de-emphasis: primary metric, correct-detector baseline
 FONT = "Helvetica, Arial, sans-serif"
 
 
@@ -80,8 +81,8 @@ def effects_figure(res, path):
     s.text(24, 50, "Difference in flip rate between two prompt arms, percentage points, with 95% event-cluster bootstrap CI",
            11.5, INK2)
     # legend
-    for i, (color, label) in enumerate([(BLUE, "Control-gated: events whose clean control was judged malicious in both arms"),
-                                        (ORANGE, "Primary: payload-induced flip, all events")]):
+    for i, (color, label) in enumerate([(YELLOW, "Control-gated: events whose clean control was judged malicious in both arms"),
+                                        (GRAY, "Primary: payload-induced flip, all events")]):
         ly = 68 + 17 * i
         s.line(24, ly, 40, ly, color, 2)
         s.dot(32, ly, color)
@@ -101,7 +102,7 @@ def effects_figure(res, path):
             continue
         cy = y + row_h / 2
         s.text(36, cy + 4, label, 12, INK)
-        for (est, color, dy) in [(r[1], BLUE, -6), (r[0], ORANGE, 6)]:
+        for (est, color, dy) in [(r[1], YELLOW, -6), (r[0], GRAY, 6)]:
             if est is None:
                 continue
             e, lo, hi = pp(est)
@@ -130,10 +131,10 @@ def dose_figure(res, path):
     for p in [0.55, 0.65, 0.75, 0.85, 0.95, 0.99]:
         s.text(X(p), Hh - bottom + 20, f"{p:.2f}", 11, INK2, "middle")
     s.text((left + W - right) / 2, Hh - bottom + 44, "Attack probability shown to the model", 11.5, INK2, "middle")
-    s.path([(X(p), Y(v)) for p, v, _, _ in pts], BLUE, 2)
+    s.path([(X(p), Y(v)) for p, v, _, _ in pts], YELLOW, 2)
     for p, v, lo, hi in pts:
-        s.line(X(p), Y(lo), X(p), Y(hi), BLUE, 2)
-        s.dot(X(p), Y(v), BLUE)
+        s.line(X(p), Y(lo), X(p), Y(hi), YELLOW, 2)
+        s.dot(X(p), Y(v), YELLOW)
     s.text(W - right, top - 12, f"Logistic slope p = {d['p']:.2f}: no trend", 11.5, INK, "end")
     s.save(path)
 
@@ -156,7 +157,7 @@ def dwrong_figure(res, path):
     s.text(24, 50, "Share of no-payload controls (48 events × 3 runs) answered as the wrong detector suggests; "
                    "95% Wilson CI", 11.5, INK2)
     lx = 24
-    for color, label in [(BLUE_LIGHT, "Correct detector (condition B)"), (BLUE_DARK, "Wrong detector (DWRONG)")]:
+    for color, label in [(GRAY, "Correct detector (condition B)"), (YELLOW, "Wrong detector (DWRONG)")]:
         s.dot(lx + 6, 74, color)
         s.text(lx + 18, 78, label, 11, INK2)
         lx += 18 + 6.2 * len(label) + 26
@@ -170,7 +171,7 @@ def dwrong_figure(res, path):
         s.text(24, cy + 16, sub, 10.5, INK2)
         v0, v1 = 100 * k0 / n0, 100 * k1 / n1
         s.line(X(v0), cy, X(v1), cy, GRID, 1)
-        for (k, n, v, color) in [(k0, n0, v0, BLUE_LIGHT), (k1, n1, v1, BLUE_DARK)]:
+        for (k, n, v, color) in [(k0, n0, v0, GRAY), (k1, n1, v1, YELLOW)]:
             lo, hi = wilson(k, n)
             s.line(X(100 * lo), cy, X(100 * hi), cy, color, 2) if hi > lo else None
             s.dot(X(v), cy, color)

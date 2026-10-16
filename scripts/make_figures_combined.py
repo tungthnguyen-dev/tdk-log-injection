@@ -11,13 +11,11 @@ import os
 import subprocess
 
 import analyse_prereg as ap
-from make_figures_haiku import AXIS, BLUE, GRID, INK, INK2, SRC, Svg, wilson
+from make_figures_haiku import AXIS, BLUE, GRAY, GRID, INK, INK2, SRC, YELLOW, Svg, wilson
 
 OUT = "results/figures"
 H, E = "claude-haiku-4-5-20251001", "gemma4:e4b"
-YELLOW = "#eda100"    # reference palette, categorical slot 4 (yellow); blue + yellow is a colour-blind-safe pair
 MODELS = [(H, "Claude Haiku 4.5", YELLOW), (E, "Gemma 4 e4b", BLUE)]
-GRAY = "#9a9993"
 
 
 def minus(v):
