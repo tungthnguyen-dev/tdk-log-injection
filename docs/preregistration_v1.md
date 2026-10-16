@@ -298,3 +298,12 @@ The runner registry must map condition VS to template VS (it named it VPS before
   its no-payload control, raw and cleaned (four scores), and the benign controls. It reports severity
   transitions, missed attacks and benign false positives on cleaned inputs, and User-Agent and URI
   truncation separately. It concerns the severity floor only and cannot change a verdict.
+- 15 Oct 2026: mixed-model sensitivity analysis. The registered binomial GLMM (variational Bayes,
+  run-level outcome, random slopes for arm) gave degenerate fits on the v1 data (random-effect SDs of
+  6-31 on the logit scale, because the outcomes are nearly deterministic), and the intercepts-only
+  fallback assumes the arm effect is the same in every event, so its intervals are too narrow. The
+  sensitivity analysis therefore uses a linear mixed model (REML) on the per-case contrast tested by each
+  hypothesis, with crossed random intercepts for event and payload: the same estimand as the bootstrap,
+  with payloads treated as random. Decided after the binomial fits on the v1 data; the H1, H3, H4 and
+  H2-Haiku results had already been seen. The bootstrap remains the decision rule; the binomial attempt
+  stays in `scripts/glmm_sensitivity.py --binomial` for the record.

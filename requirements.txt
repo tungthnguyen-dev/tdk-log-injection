@@ -6,3 +6,4 @@ python-dotenv==1.2.1
 requests==2.32.5
 scikit-learn==1.9.1
 shap==0.52.0
+statsmodels==0.15.0
