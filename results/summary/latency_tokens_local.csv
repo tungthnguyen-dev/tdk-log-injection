@@ -28,6 +28,8 @@ gemma4_e4b_srbh_benign.csv,B,79,2.63,2.65,550.4,53.5
 gemma4_e4b_srbh_benign.csv,C,79,2.55,2.62,639.4,50.1
 gemma4_e4b_srbh_clean_c.csv,C,248,2.81,2.89,660.2,54.5
 gemma4_e4b_v2_bclean.csv,BCLEAN,1488,2.65,2.59,548.2,59.6
+gemma4_e4b_v2_bprime_bclean.csv,B,1488,2.77,2.8,548.6,59.3
+gemma4_e4b_v2_bprime_bclean.csv,BCLEAN,1488,2.69,2.63,548.2,59.7
 gemma4_e4b_v2_components.csv,PLACEBO,1488,2.51,2.51,475.1,52.0
 gemma4_e4b_v2_components.csv,V,1488,2.41,2.41,361.1,57.3
 gemma4_e4b_v2_components.csv,VP,1488,2.46,2.47,372.1,58.0
