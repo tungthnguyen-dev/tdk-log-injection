@@ -16,6 +16,10 @@ OLLAMA_URL = f"{OLLAMA_BASE}/api/chat"
 OLLAMA_OPTIONS = {"temperature": 0, "seed": 42, "num_ctx": 8192}
 ANTHROPIC_MAX_TOKENS = 512
 ANTHROPIC_MAX_RETRIES = 5
+GEMINI_MAX_TOKENS = 1024     # leaves room for thinking tokens on models that cannot turn thinking off
+GEMINI_RETRY_ATTEMPTS = 5
+GEMINI_SAFETY_CATEGORIES = ["HARM_CATEGORY_HARASSMENT", "HARM_CATEGORY_HATE_SPEECH",
+                            "HARM_CATEGORY_SEXUALLY_EXPLICIT", "HARM_CATEGORY_DANGEROUS_CONTENT"]
 
 # Condition registry. Condition IDs are upper case (the --conditions argument is upper-cased).
 # Detector sources: "injected" = the case's own detector columns; "clean" = the same event's
@@ -48,7 +52,7 @@ SEVERITY_ORDER = ["none", "low", "medium", "high", "critical"]   # shared scale
 
 DETECTOR_COLUMNS = ["detector_verdict", "detector_proba", "detector_severity", "shap_top5"]
 
-RESULT_FIELDS = [
+LEGACY_RESULT_FIELDS = [
     "timestamp", "backend", "model", "prompt_version", "prompt_hash",
     "case_id", "event_id", "attack_type",
     "payload_id", "payload_category", "target_field", "condition", "run", "defended",
@@ -60,6 +64,8 @@ RESULT_FIELDS = [
     "params_sent", "runner_commit", "backend_version", "model_digest",
     "raw_response",
 ]
+# served_model: the model version the API reports for each call; thinking_tokens: when the API reports them
+RESULT_FIELDS = LEGACY_RESULT_FIELDS + ["served_model", "thinking_tokens"]
 
 
 def parse_args():
@@ -70,7 +76,7 @@ def parse_args():
                    help="Directory with condition_{TEMPLATE}_{system,user}.txt")
     p.add_argument("--model", required=True,
                    help="Model name, e.g. gemma4:e4b or claude-haiku-4-5-20251001")
-    p.add_argument("--backend", choices=["ollama", "anthropic"], default="ollama")
+    p.add_argument("--backend", choices=["ollama", "anthropic", "gemini"], default="ollama")
     p.add_argument("--conditions", default="A,B,C",
                    help="Comma-separated condition IDs, default A,B,C. "
                         f"Known: {', '.join(CONDITIONS)}")
@@ -80,7 +86,11 @@ def parse_args():
     p.add_argument("--clean-payload-id", default="none",
                    help="payload_id that marks an event's no-payload row (used by detector='clean')")
     p.add_argument("--no-temperature", action="store_true",
-                   help="Anthropic only: do not send temperature (for models that reject 0)")
+                   help="Anthropic/Gemini: do not send temperature (for models that reject or ignore 0)")
+    p.add_argument("--thinking", choices=["default", "off", "minimal"], default="default",
+                   help="default: send nothing (Haiku 4.5 then runs without thinking). "
+                        "off: Anthropic thinking disabled / Gemini thinking_budget 0. "
+                        "minimal: Gemini thinking_level MINIMAL (for models that cannot turn it off)")
     return p.parse_args()
 
 
@@ -103,6 +113,9 @@ def backend_info(backend, model):
     if backend == "anthropic":
         import anthropic
         return f"anthropic-sdk {anthropic.__version__}", model
+    if backend == "gemini":
+        from google import genai
+        return f"google-genai {genai.__version__}", model
     version = digest = "unknown"
     try:
         version = requests.get(f"{OLLAMA_BASE}/api/version", timeout=10).json().get("version", "unknown")
@@ -209,20 +222,30 @@ def fill(template, det, raw_log):
 # ---------- backends ----------
 
 def make_client(backend):
-    """Create the Anthropic client only when needed (Ollama users need no API key)."""
-    if backend != "anthropic":
+    """Create the API client only when needed (Ollama users need no API key)."""
+    if backend == "ollama":
         return None
-    import anthropic
     from dotenv import load_dotenv
     load_dotenv()
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        sys.exit("ANTHROPIC_API_KEY is not set. Put it in .env (never commit it) or export it.")
-    return anthropic.Anthropic(max_retries=ANTHROPIC_MAX_RETRIES)
+    if backend == "anthropic":
+        import anthropic
+        if not os.environ.get("ANTHROPIC_API_KEY"):
+            sys.exit("ANTHROPIC_API_KEY is not set. Put it in .env (never commit it) or export it.")
+        return anthropic.Anthropic(max_retries=ANTHROPIC_MAX_RETRIES)
+    from google import genai
+    from google.genai import types
+    key = os.environ.get("GEMINI_API_KEY")
+    if not key:
+        sys.exit("GEMINI_API_KEY is not set. Put it in .env (never commit it) or export it.")
+    retry = types.HttpRetryOptions(attempts=GEMINI_RETRY_ATTEMPTS,
+                                   http_status_codes=[408, 429, 500, 502, 503, 504])
+    return genai.Client(api_key=key, http_options=types.HttpOptions(retry_options=retry))
 
 
 def error_response(latency, message, params):
     return {"text": "", "latency_s": latency, "error": message, "finish_reason": "",
-            "prompt_tokens": 0, "output_tokens": 0, "params_sent": params}
+            "prompt_tokens": 0, "output_tokens": 0, "params_sent": params,
+            "served_model": "", "thinking_tokens": ""}
 
 
 def call_ollama(model, system, user):
@@ -247,15 +270,19 @@ def call_ollama(model, system, user):
             "finish_reason": r.get("done_reason", ""),
             "prompt_tokens": r.get("prompt_eval_count", 0),
             "output_tokens": r.get("eval_count", 0),
-            "params_sent": params_json}
+            "params_sent": params_json,
+            "served_model": r.get("model", model), "thinking_tokens": ""}
 
 
-def call_anthropic(client, model, system, user, send_temperature=True):
-    """Send one Messages API request to Claude (temperature 0 unless disabled, no thinking)."""
+def call_anthropic(client, model, system, user, send_temperature=True, thinking="default"):
+    """Send one Messages API request to Claude (temperature 0 unless disabled).
+    thinking='off' sends thinking disabled (needed for models that think by default)."""
     import anthropic
     params = {"max_tokens": ANTHROPIC_MAX_TOKENS}
     if send_temperature:
         params["temperature"] = 0
+    if thinking == "off":
+        params["thinking"] = {"type": "disabled"}
     params_json = json.dumps(params, sort_keys=True)
     t0 = time.perf_counter()
     try:
@@ -270,12 +297,59 @@ def call_anthropic(client, model, system, user, send_temperature=True):
             "finish_reason": resp.stop_reason or "",
             "prompt_tokens": resp.usage.input_tokens,
             "output_tokens": resp.usage.output_tokens,
-            "params_sent": params_json}
+            "params_sent": params_json,
+            "served_model": resp.model or "", "thinking_tokens": ""}
 
 
-def call_model(backend, client, model, system, user, send_temperature=True):
+def call_gemini(client, model, system, user, send_temperature=True, thinking="default"):
+    """Send one generate_content request to Gemini. Safety filters are set to OFF for the four
+    adjustable categories (defensive study on attack logs). A blocked prompt or a safety stop is an
+    answer (empty text, so it is scored as invalid), not an infrastructure error."""
+    from google.genai import errors, types
+    params = {"max_output_tokens": GEMINI_MAX_TOKENS, "safety_off": GEMINI_SAFETY_CATEGORIES}
+    config = {"system_instruction": system, "max_output_tokens": GEMINI_MAX_TOKENS,
+              "safety_settings": [types.SafetySetting(category=c, threshold=types.HarmBlockThreshold.OFF)
+                                  for c in GEMINI_SAFETY_CATEGORIES]}
+    if send_temperature:
+        params["temperature"] = config["temperature"] = 0
+    if thinking == "off":
+        params["thinking_budget"] = 0
+        config["thinking_config"] = types.ThinkingConfig(thinking_budget=0)
+    elif thinking == "minimal":
+        params["thinking_level"] = "MINIMAL"
+        config["thinking_config"] = types.ThinkingConfig(thinking_level=types.ThinkingLevel.MINIMAL)
+    params_json = json.dumps(params, sort_keys=True)
+    t0 = time.perf_counter()
+    try:
+        resp = client.models.generate_content(model=model, contents=user,
+                                              config=types.GenerateContentConfig(**config))
+    except errors.APIError as e:
+        return error_response(time.perf_counter() - t0, f"{type(e).__name__}: {e}", params_json)
+    latency = time.perf_counter() - t0
+    text, finish = "", ""
+    block = resp.prompt_feedback.block_reason if resp.prompt_feedback else None
+    if block:
+        finish = f"PROMPT_BLOCKED:{getattr(block, 'name', block)}"
+    elif resp.candidates:
+        cand = resp.candidates[0]
+        finish = getattr(cand.finish_reason, "name", str(cand.finish_reason or ""))
+        parts = cand.content.parts if cand.content and cand.content.parts else []
+        text = "".join(p.text for p in parts if p.text and not p.thought)
+    usage = resp.usage_metadata
+    return {"text": text, "latency_s": latency, "error": "",
+            "finish_reason": finish,
+            "prompt_tokens": (usage.prompt_token_count or 0) if usage else 0,
+            "output_tokens": (usage.candidates_token_count or 0) if usage else 0,
+            "params_sent": params_json,
+            "served_model": resp.model_version or "",
+            "thinking_tokens": (usage.thoughts_token_count or 0) if usage else ""}
+
+
+def call_model(backend, client, model, system, user, send_temperature=True, thinking="default"):
     if backend == "anthropic":
-        return call_anthropic(client, model, system, user, send_temperature)
+        return call_anthropic(client, model, system, user, send_temperature, thinking)
+    if backend == "gemini":
+        return call_gemini(client, model, system, user, send_temperature, thinking)
     return call_ollama(model, system, user)
 
 
@@ -361,8 +435,12 @@ def main():
     if commit.endswith("-dirty") or commit == "unknown":
         print("WARNING: runner code is not a clean git commit; results will not be traceable.")
     send_temperature = not args.no_temperature
-    if args.no_temperature and args.backend != "anthropic":
-        sys.exit("--no-temperature is only for the anthropic backend")
+    if args.no_temperature and args.backend == "ollama":
+        sys.exit("--no-temperature is only for the anthropic and gemini backends")
+    if args.thinking != "default" and args.backend == "ollama":
+        sys.exit("--thinking is only for the anthropic and gemini backends (Ollama always runs think=False)")
+    if args.thinking == "minimal" and args.backend != "gemini":
+        sys.exit("--thinking minimal is only for the gemini backend")
 
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     new_file = not os.path.exists(args.out)
@@ -372,12 +450,14 @@ def main():
 
     # Resume: skip (case, condition, run) that already have an error-free result for this model
     done_keys = set()
+    fieldnames = RESULT_FIELDS
     if not new_file:
         with open(args.out) as fh:
             header = fh.readline().strip().split(",")
-        if header != RESULT_FIELDS:
+        if header not in (RESULT_FIELDS, LEGACY_RESULT_FIELDS):
             sys.exit(f"{args.out} has a different column layout (older runner version). "
                      "Use a new --out file.")
+        fieldnames = header          # a file started before served_model/thinking_tokens keeps its layout
         prev = pd.read_csv(args.out, keep_default_na=False)
         prev = prev[(prev["model"] == args.model) & (prev["error"] == "")
                     & (prev["prompt_version"] == prompt_version)]
@@ -386,7 +466,7 @@ def main():
               f"for {args.model} with prompts {prompt_version}")
 
     with open(args.out, "a", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=RESULT_FIELDS)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
         if new_file:
             writer.writeheader()
 
@@ -407,7 +487,7 @@ def main():
                             continue
 
                         resp = call_model(args.backend, client, args.model, system_t, user,
-                                          send_temperature)
+                                          send_temperature, args.thinking)
                         valid, verdict, severity, explanation = parse_answer(resp["text"])
                         tokens_in += resp["prompt_tokens"]
                         tokens_out += resp["output_tokens"]
@@ -461,6 +541,8 @@ def main():
                             "backend_version": backend_version,
                             "model_digest": model_digest,
                             "raw_response": resp["text"],
+                            "served_model": resp.get("served_model", ""),
+                            "thinking_tokens": resp.get("thinking_tokens", ""),
                         })
                         f.flush()   # write to disk now, so a crash loses at most one row
                         done += 1
