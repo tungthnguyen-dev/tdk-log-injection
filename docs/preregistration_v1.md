@@ -277,3 +277,43 @@ The runner registry must map condition VS to template VS (it named it VPS before
 - 12 Oct 2026: two runner processes overlapped for about 2 minutes; 36 Haiku calls were duplicated; the analysis keeps the earliest error-free row per case, condition and run; no outcome data had been looked at.
 - 14 Oct 2026: the SR-BH labels were checked by hand by Bakhtier alone, not by both authors (all 500 rows: 327 agree, 145 disagree, 28 unsure). An AI assistant provided the checking rules beforehand and ran a consistency check afterwards; following that check, 8 benign rows (scanner User-Agent, 404, no payload) were changed from agree to disagree to match the rule used for similar rows. No LLM output on SR-BH existed.
 - 15 Oct 2026: qwen3.5:9b ran A/B/C on the full set (1,488 + 48 benign) instead of the subset, run 11 Oct before this pre-registration was final. More data, same design; the ladder still uses the subset. No summary of these files has been computed.
+- 15 Oct 2026, before any new-arm result was analysed: clarifications and added sensitivity analyses.
+  The primary outcome, the six hypotheses and the decision rule are unchanged.
+  (a) The bootstrap p is capped at 1. The 95% CIs are unadjusted; Holm applies to the p-values only.
+  (b) Duplicates: among rows without an infrastructure error (the `error` column), the earliest by
+  timestamp is kept for each model, prompt version, case, condition and run. An invalid answer is an
+  outcome and is never a reason to drop or replace a row. Dropped rows are listed in the output.
+  (c) Control gating: for every compared pair of arms, control accuracy (malicious / benign / invalid)
+  and the raw flip rate are reported next to the payload-induced flip, plus a sensitivity analysis on the
+  events whose no-payload control was judged malicious in every run of both arms.
+  (d) H4: a sensitivity analysis that uses Haiku's first run only.
+  (e) The intra-event correlation is estimated on the per-case contrast being tested (e.g. Y_B - Y_A);
+  n_eff is reported as a heuristic only.
+  (f) H3 is reported as a contrast between these payload groups, not as an isolated family effect;
+  results by field are descriptive.
+  (g) The analysis script is checked on synthetic data with known answers, with a no-effect simulation
+  of the decision rule's false-positive rate, and on the already-seen v1 data, before it is run on the
+  new arms.
+  (h) Sanitise-before-score (exploratory, Section 6 item 7): the detector re-scores each payload case and
+  its no-payload control, raw and cleaned (four scores), and the benign controls. It reports severity
+  transitions, missed attacks and benign false positives on cleaned inputs, and User-Agent and URI
+  truncation separately. It concerns the severity floor only and cannot change a verdict.
+- 15 Oct 2026: mixed-model sensitivity analysis. The registered binomial GLMM (variational Bayes,
+  run-level outcome, random slopes for arm) gave degenerate fits on the v1 data (random-effect SDs of
+  6-31 on the logit scale, because the outcomes are nearly deterministic), and the intercepts-only
+  fallback assumes the arm effect is the same in every event, so its intervals are too narrow. The
+  sensitivity analysis therefore uses a linear mixed model (REML) on the per-case contrast tested by each
+  hypothesis, with crossed random intercepts for event and payload: the same estimand as the bootstrap,
+  with payloads treated as random. Decided after the binomial fits on the v1 data; the H1, H3, H4 and
+  H2-Haiku results had already been seen. The bootstrap remains the decision rule; the binomial attempt
+  stays in `scripts/glmm_sensitivity.py --binomial` for the record.
+- 16 Oct 2026: Referer sanity check for H2-e4b. 211 of 240 Referer outputs are byte-identical between
+  B (8 Oct) and BCLEAN (15 Oct); the other 29 differ only in wording (0 verdicts and 2 severities differ).
+  11 of the 29 reproduce verbatim another case's 8 Oct output, consistent with Ollama prompt caching and
+  call order rather than a model change. gemma4:e4b is deterministic within a session (300/300) but not
+  across sessions with a different call order. Y depends on the verdict only, so H2-e4b is interpreted;
+  the 0/240 verdict changes are reported as its noise floor.
+- 16 Oct 2026: after the Referer check, an extra gemma4:e4b run of B (as B') and BCLEAN, interleaved per
+  case in one session (prompts/v2, 1 run, separate output file), is added as a sensitivity analysis.
+  H2-e4b stays as pre-registered (B from 8 Oct vs BCLEAN); the same-session contrast B' - BCLEAN is
+  reported next to it. H2-e4b had not been computed when this was decided.

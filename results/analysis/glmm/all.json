@@ -1,0 +1,65 @@
+{
+  "method": "linear mixed model (REML) on per-case contrasts, crossed random intercepts for event and payload",
+  "tests": {
+    "H1": {
+      "estimate": -0.027777777777785496,
+      "se": 0.03658092015903721,
+      "ci_low": -0.09947638128949843,
+      "ci_high": 0.04392082573392744,
+      "converged": true,
+      "n_cases": 1440,
+      "sd_event": 0.17344864201429067,
+      "sd_payload": 0.13944964805500865,
+      "bootstrap_ci_excludes_0": false,
+      "mixed_ci_excludes_0": false
+    },
+    "H3-e4b": {
+      "estimate": 0.0760416666666619,
+      "se": 0.08059118607743641,
+      "ci_low": -0.08191705804511346,
+      "ci_high": 0.23400039137843726,
+      "converged": true,
+      "n_cases": 1440,
+      "sd_event": 0.2585654555141681,
+      "sd_payload": 0.2029995089926581,
+      "bootstrap_ci_excludes_0": true,
+      "mixed_ci_excludes_0": false
+    },
+    "H3-Haiku": {
+      "estimate": 0.007291666666666229,
+      "se": 0.05756097564771244,
+      "ci_low": -0.10552784560285015,
+      "ci_high": 0.1201111789361826,
+      "converged": true,
+      "n_cases": 1440,
+      "sd_event": 0.17343663771848708,
+      "sd_payload": 0.14210027413945892,
+      "bootstrap_ci_excludes_0": false,
+      "mixed_ci_excludes_0": false
+    },
+    "H4": {
+      "estimate": 0.11458333333338473,
+      "se": 0.06776211026784738,
+      "ci_low": -0.018230402791596143,
+      "ci_high": 0.2473970694583656,
+      "converged": true,
+      "n_cases": 1440,
+      "sd_event": 0.323157841051265,
+      "sd_payload": 0.2617997649143454,
+      "bootstrap_ci_excludes_0": true,
+      "mixed_ci_excludes_0": false
+    },
+    "H2-Haiku": {
+      "estimate": -0.004166666666666543,
+      "se": 0.004630021014062046,
+      "ci_low": -0.013241507854228151,
+      "ci_high": 0.004908174520895066,
+      "converged": true,
+      "n_cases": 1440,
+      "sd_event": 0.01967782789600389,
+      "sd_payload": 0.00579892602954658,
+      "bootstrap_ci_excludes_0": false,
+      "mixed_ci_excludes_0": false
+    }
+  }
+}

@@ -1,0 +1,457 @@
+{
+  "stage": "v1",
+  "files": [
+    "results/runs/claude_haiku_4_5_v1.csv",
+    "results/runs/gemma4_e4b.csv"
+  ],
+  "infrastructure_errors": 0,
+  "duplicates_dropped": [],
+  "confirmatory": {
+    "H1": {
+      "name": "H1",
+      "model": "claude-haiku-4-5-20251001",
+      "contrast": "B - A",
+      "n_cases": 1440,
+      "primary": {
+        "estimate": -0.027777777777777776,
+        "ci_low": -0.08032407407407406,
+        "ci_high": 0.02268518518518519,
+        "p": 0.2898,
+        "n_events": 48
+      },
+      "worst_case": {
+        "estimate": -0.02847222222222222,
+        "ci_low": -0.08055555555555556,
+        "ci_high": 0.022222222222222223,
+        "p": 0.274,
+        "n_events": 48
+      },
+      "complete_case": {
+        "estimate": -0.02779708130646282,
+        "ci_low": -0.08032407407407408,
+        "ci_high": 0.02270134439546341,
+        "p": 0.2898,
+        "n_events": 48
+      },
+      "raw_flip": {
+        "estimate": 0.007638888888888888,
+        "ci_low": -0.02037037037037037,
+        "ci_high": 0.03680555555555556,
+        "p": 0.6024,
+        "n_events": 48
+      },
+      "control_gated": {
+        "estimate": 0.0,
+        "ci_low": -0.02222222222222222,
+        "ci_high": 0.020555555555555556,
+        "p": 0.9756,
+        "n_events": 40
+      },
+      "control_gated_raw_flip": {
+        "estimate": 0.0,
+        "ci_low": -0.02222222222222222,
+        "ci_high": 0.020555555555555556,
+        "p": 0.9756,
+        "n_events": 40
+      },
+      "control_gated_events": 40,
+      "icc": {
+        "icc": 0.21042791271992498,
+        "n_eff": 202.7480964467005
+      },
+      "mcnemar": {
+        "discordant_1_not_0": 81,
+        "discordant_0_not_1": 121,
+        "mcnemar_midp": 0.004870281449636703
+      }
+    },
+    "H3-e4b": {
+      "name": "H3-e4b",
+      "model": "gemma4:e4b",
+      "contrast": "B - A (G minus rest)",
+      "n_cases": 1440,
+      "primary": {
+        "estimate": 0.07604166666666666,
+        "ci_low": 0.016666666666666663,
+        "ci_high": 0.13020833333333334,
+        "p": 0.016,
+        "n_events": 48
+      },
+      "worst_case": {
+        "estimate": 0.07604166666666666,
+        "ci_low": 0.016666666666666663,
+        "ci_high": 0.13020833333333334,
+        "p": 0.016,
+        "n_events": 48
+      },
+      "complete_case": {
+        "estimate": 0.07604166666666666,
+        "ci_low": 0.016666666666666663,
+        "ci_high": 0.13020833333333334,
+        "p": 0.016,
+        "n_events": 48
+      },
+      "raw_flip": {
+        "estimate": 0.08124999999999999,
+        "ci_low": 0.023958333333333304,
+        "ci_high": 0.134375,
+        "p": 0.008,
+        "n_events": 48
+      },
+      "control_gated": {
+        "estimate": 0.16710526315789476,
+        "ci_low": 0.1368421052631579,
+        "ci_high": 0.19473684210526315,
+        "p": 0.0001,
+        "n_events": 38
+      },
+      "control_gated_raw_flip": {
+        "estimate": 0.16710526315789476,
+        "ci_low": 0.1368421052631579,
+        "ci_high": 0.19473684210526315,
+        "p": 0.0001,
+        "n_events": 38
+      },
+      "control_gated_events": 38,
+      "icc": {
+        "icc": 0.3165301677963361,
+        "n_eff": 141.46251797804047
+      }
+    },
+    "H3-Haiku": {
+      "name": "H3-Haiku",
+      "model": "claude-haiku-4-5-20251001",
+      "contrast": "B - A (G minus rest)",
+      "n_cases": 1440,
+      "primary": {
+        "estimate": 0.0072916666666666685,
+        "ci_low": -0.018055555555555554,
+        "ci_high": 0.032986111111111105,
+        "p": 0.5808,
+        "n_events": 48
+      },
+      "worst_case": {
+        "estimate": 0.008333333333333342,
+        "ci_low": -0.017013888888888884,
+        "ci_high": 0.034027777777777775,
+        "p": 0.5252,
+        "n_events": 48
+      },
+      "complete_case": {
+        "estimate": 0.007323166492874525,
+        "ci_low": -0.018036492729695278,
+        "ci_high": 0.03298611111111111,
+        "p": 0.5712,
+        "n_events": 48
+      },
+      "raw_flip": {
+        "estimate": 0.02291666666666667,
+        "ci_low": -0.007638888888888884,
+        "ci_high": 0.05486111111111111,
+        "p": 0.1496,
+        "n_events": 48
+      },
+      "control_gated": {
+        "estimate": -5.551115123125783e-19,
+        "ci_low": -0.027499999999999997,
+        "ci_high": 0.029166666666666667,
+        "p": 0.9984,
+        "n_events": 40
+      },
+      "control_gated_raw_flip": {
+        "estimate": -5.551115123125783e-19,
+        "ci_low": -0.027499999999999997,
+        "ci_high": 0.029166666666666667,
+        "p": 0.9984,
+        "n_events": 40
+      },
+      "control_gated_events": 40,
+      "icc": {
+        "icc": 0.21042791271992498,
+        "n_eff": 202.7480964467005
+      }
+    },
+    "H4": {
+      "name": "H4",
+      "contrast": "(B - A) Haiku - (B - A) e4b",
+      "primary": {
+        "estimate": 0.11458333333333333,
+        "ci_low": 0.019212962962962966,
+        "ci_high": 0.20532407407407405,
+        "p": 0.0196,
+        "n_events": 48
+      },
+      "haiku_first_run": {
+        "estimate": 0.11458333333333333,
+        "ci_low": 0.019444444444444445,
+        "ci_high": 0.20555555555555555,
+        "p": 0.0198,
+        "n_events": 48
+      },
+      "control_gated": {
+        "estimate": 0.23423423423423423,
+        "ci_low": 0.17297297297297298,
+        "ci_high": 0.3033033033033033,
+        "p": 0.0001,
+        "n_events": 37
+      },
+      "control_gated_events": 37,
+      "icc": {
+        "icc": 0.2837760133891091,
+        "n_eff": 156.02137876741472
+      }
+    }
+  },
+  "rates": [
+    {
+      "model": "claude-haiku-4-5-20251001",
+      "condition": "A",
+      "payload_cases": 1440,
+      "payload_induced_flip": 0.1587962962962963,
+      "payload_induced_flip_ci": [
+        0.11620370370370368,
+        0.20625
+      ],
+      "raw_flip": 0.22268518518518515,
+      "raw_flip_ci": [
+        0.16180555555555556,
+        0.29050925925925924
+      ],
+      "invalid_rate_payload": 0.0006944444444444445,
+      "benign_fp": 0,
+      "benign_n": 144,
+      "benign_fp_ci": [
+        0.0,
+        0.025984567266588023
+      ]
+    },
+    {
+      "model": "claude-haiku-4-5-20251001",
+      "condition": "B",
+      "payload_cases": 1440,
+      "payload_induced_flip": 0.1310185185185185,
+      "payload_induced_flip_ci": [
+        0.09722222222222222,
+        0.17129629629629628
+      ],
+      "raw_flip": 0.23032407407407404,
+      "raw_flip_ci": [
+        0.1692071759259259,
+        0.29814814814814816
+      ],
+      "invalid_rate_payload": 0.0,
+      "benign_fp": 0,
+      "benign_n": 144,
+      "benign_fp_ci": [
+        0.0,
+        0.025984567266588023
+      ]
+    },
+    {
+      "model": "claude-haiku-4-5-20251001",
+      "condition": "C",
+      "payload_cases": 1440,
+      "payload_induced_flip": 0.06041666666666667,
+      "payload_induced_flip_ci": [
+        0.033796296296296297,
+        0.09212962962962964
+      ],
+      "raw_flip": 0.11782407407407407,
+      "raw_flip_ci": [
+        0.07106481481481482,
+        0.1712962962962963
+      ],
+      "invalid_rate_payload": 0.0006944444444444445,
+      "benign_fp": 0,
+      "benign_n": 144,
+      "benign_fp_ci": [
+        0.0,
+        0.025984567266588023
+      ]
+    },
+    {
+      "model": "gemma4:e4b",
+      "condition": "A",
+      "payload_cases": 1440,
+      "payload_induced_flip": 0.25833333333333336,
+      "payload_induced_flip_ci": [
+        0.1951388888888889,
+        0.32916666666666666
+      ],
+      "raw_flip": 0.4638888888888889,
+      "raw_flip_ci": [
+        0.3736111111111111,
+        0.5625173611111108
+      ],
+      "invalid_rate_payload": 0.0,
+      "benign_fp": 0,
+      "benign_n": 48,
+      "benign_fp_ci": [
+        0.0,
+        0.0741026511527422
+      ]
+    },
+    {
+      "model": "gemma4:e4b",
+      "condition": "B",
+      "payload_cases": 1440,
+      "payload_induced_flip": 0.11597222222222223,
+      "payload_induced_flip_ci": [
+        0.10069444444444445,
+        0.13472222222222222
+      ],
+      "raw_flip": 0.11597222222222223,
+      "raw_flip_ci": [
+        0.10069444444444445,
+        0.13472222222222222
+      ],
+      "invalid_rate_payload": 0.0,
+      "benign_fp": 0,
+      "benign_n": 48,
+      "benign_fp_ci": [
+        0.0,
+        0.0741026511527422
+      ]
+    },
+    {
+      "model": "gemma4:e4b",
+      "condition": "C",
+      "payload_cases": 1440,
+      "payload_induced_flip": 0.050694444444444445,
+      "payload_induced_flip_ci": [
+        0.02361111111111111,
+        0.08611111111111111
+      ],
+      "raw_flip": 0.050694444444444445,
+      "raw_flip_ci": [
+        0.02361111111111111,
+        0.08611111111111111
+      ],
+      "invalid_rate_payload": 0.0,
+      "benign_fp": 0,
+      "benign_n": 48,
+      "benign_fp_ci": [
+        0.0,
+        0.0741026511527422
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "model": "claude-haiku-4-5-20251001",
+      "condition": "A",
+      "malicious": 132,
+      "benign": 12,
+      "invalid": 0
+    },
+    {
+      "model": "claude-haiku-4-5-20251001",
+      "condition": "B",
+      "malicious": 123,
+      "benign": 21,
+      "invalid": 0
+    },
+    {
+      "model": "claude-haiku-4-5-20251001",
+      "condition": "C",
+      "malicious": 127,
+      "benign": 17,
+      "invalid": 0
+    },
+    {
+      "model": "gemma4:e4b",
+      "condition": "A",
+      "malicious": 38,
+      "benign": 10,
+      "invalid": 0
+    },
+    {
+      "model": "gemma4:e4b",
+      "condition": "B",
+      "malicious": 48,
+      "benign": 0,
+      "invalid": 0
+    },
+    {
+      "model": "gemma4:e4b",
+      "condition": "C",
+      "malicious": 48,
+      "benign": 0,
+      "invalid": 0
+    }
+  ],
+  "by_field_B_minus_A": {
+    "claude-haiku-4-5-20251001": {
+      "referer": {
+        "estimate": 0.05138888888888889,
+        "ci_low": -0.04861111111111112,
+        "ci_high": 0.14305555555555555,
+        "p": 0.299,
+        "n_events": 48
+      },
+      "uri": {
+        "estimate": -0.015625,
+        "ci_low": -0.03993055555555555,
+        "ci_high": 0.006944444444444443,
+        "p": 0.1922,
+        "n_events": 48
+      },
+      "user_agent": {
+        "estimate": -0.04894179894179894,
+        "ci_low": -0.0982225529100529,
+        "ci_high": 0.00033068783068783305,
+        "p": 0.0532,
+        "n_events": 48
+      }
+    },
+    "gemma4:e4b": {
+      "referer": {
+        "estimate": -0.10833333333333334,
+        "ci_low": -0.18333333333333332,
+        "ci_high": -0.04583333333333333,
+        "p": 0.0001,
+        "n_events": 48
+      },
+      "uri": {
+        "estimate": -0.052083333333333336,
+        "ci_low": -0.11458333333333333,
+        "ci_high": -0.005208333333333333,
+        "p": 0.0324,
+        "n_events": 48
+      },
+      "user_agent": {
+        "estimate": -0.16765873015873015,
+        "ci_low": -0.25496031746031744,
+        "ci_high": -0.08333333333333333,
+        "p": 0.0001,
+        "n_events": 48
+      }
+    }
+  },
+  "floor_erosion": {
+    "anchor_lowered_by_field": {
+      "referer": [
+        0,
+        240
+      ],
+      "uri": [
+        0,
+        192
+      ],
+      "user_agent": [
+        783,
+        1008
+      ]
+    },
+    "claude-haiku-4-5-20251001": {
+      "C_rows": 4320,
+      "floor_applied": 927,
+      "floor_applied_at_lowered_anchor": 164
+    },
+    "gemma4:e4b": {
+      "C_rows": 1440,
+      "floor_applied": 268,
+      "floor_applied_at_lowered_anchor": 54
+    }
+  }
+}
