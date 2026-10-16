@@ -1,0 +1,70 @@
+{
+  "floor_replay_meta": {
+    "valid_C_payload_rows": 5757,
+    "invalid_C_payload_rows_excluded": 3,
+    "current_floor_reproduces_runner_final_severity": "5757/5757"
+  },
+  "dwrong_shown_probability_range": {
+    "Haiku 4.5": {
+      "benign_shown_attack": [
+        0.96,
+        1.0
+      ],
+      "attack_shown_benign": [
+        0.0,
+        0.145
+      ]
+    },
+    "gemma4:e4b": {
+      "benign_shown_attack": [
+        0.96,
+        1.0
+      ],
+      "attack_shown_benign": [
+        0.0,
+        0.145
+      ]
+    }
+  },
+  "verdict_side": {
+    "Haiku 4.5": {
+      "C_payload_rows_final_benign": [
+        509,
+        4320
+      ],
+      "C_benign_rows_final_malicious": [
+        0,
+        144,
+        [
+          0.0,
+          0.025984567266588023
+        ]
+      ]
+    },
+    "gemma4:e4b": {
+      "C_payload_rows_final_benign": [
+        73,
+        1440
+      ],
+      "C_benign_rows_final_malicious": [
+        0,
+        48,
+        [
+          0.0,
+          0.0741026511527422
+        ]
+      ]
+    },
+    "detector_on_benign_controls": {
+      "raw_attack": 0,
+      "cleaned_attack": 0,
+      "n": 48
+    }
+  },
+  "bootstrap_resamples": 10000,
+  "notes": [
+    "Exploratory (pre-registration Section 6, item 7); e4b and Haiku A/B/C data were already seen.",
+    "DWRONG cost uses prompt B outputs and synthetic wrong-detector controls.",
+    "Haiku latency includes network time; gemma4:e4b ran locally."
+  ]
+}

@@ -1,0 +1,6 @@
+model,ans,ans_final,rows
+Haiku 4.5,benign,benign,509
+Haiku 4.5,invalid,malicious,3
+Haiku 4.5,malicious,malicious,3808
+gemma4:e4b,benign,benign,73
+gemma4:e4b,malicious,malicious,1367

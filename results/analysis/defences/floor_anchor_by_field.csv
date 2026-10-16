@@ -1,0 +1,4 @@
+target_field,cases,anchor_lowered,restored_by_cleaning,below_control_after_cleaning,mean_raw_proba,mean_clean_proba
+referer,240,0,0,0,0.98,0.98
+uri,192,0,0,0,0.998,0.998
+user_agent,1008,783,0,783,0.837,0.837
