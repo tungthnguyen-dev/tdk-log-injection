@@ -307,3 +307,13 @@ The runner registry must map condition VS to template VS (it named it VPS before
   with payloads treated as random. Decided after the binomial fits on the v1 data; the H1, H3, H4 and
   H2-Haiku results had already been seen. The bootstrap remains the decision rule; the binomial attempt
   stays in `scripts/glmm_sensitivity.py --binomial` for the record.
+- 16 Oct 2026: Referer sanity check for H2-e4b. 211 of 240 Referer outputs are byte-identical between
+  B (8 Oct) and BCLEAN (15 Oct); the other 29 differ only in wording (0 verdicts and 2 severities differ).
+  11 of the 29 reproduce verbatim another case's 8 Oct output, consistent with Ollama prompt caching and
+  call order rather than a model change. gemma4:e4b is deterministic within a session (300/300) but not
+  across sessions with a different call order. Y depends on the verdict only, so H2-e4b is interpreted;
+  the 0/240 verdict changes are reported as its noise floor.
+- 16 Oct 2026: after the Referer check, an extra gemma4:e4b run of B (as B') and BCLEAN, interleaved per
+  case in one session (prompts/v2, 1 run, separate output file), is added as a sensitivity analysis.
+  H2-e4b stays as pre-registered (B from 8 Oct vs BCLEAN); the same-session contrast B' - BCLEAN is
+  reported next to it. H2-e4b had not been computed when this was decided.
