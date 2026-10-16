@@ -1,0 +1,32 @@
+{
+  "dataset": "SR-BH 2020 slice v1, hand-checked agree rows only",
+  "n_events": 327,
+  "n_attack": 248,
+  "n_benign": 79,
+  "precision": 0.9836,
+  "recall": 0.9677,
+  "f1": 0.9756,
+  "false_positive_rate": 0.0506,
+  "confusion_matrix": {
+    "tn": 75,
+    "fp": 4,
+    "fn": 8,
+    "tp": 240
+  },
+  "recall_by_attack_type": {
+    "path_scan": 1.0,
+    "sqli": 0.9268,
+    "path_traversal": 0.9759
+  },
+  "features": [
+    "uri_length",
+    "uri_entropy",
+    "uri_special_chars",
+    "status",
+    "ua_length",
+    "ua_known_scanner"
+  ],
+  "model": "RandomForestClassifier(n_estimators=200, random_state=42)",
+  "cv": "StratifiedGroupKFold(n_splits=5) grouped by hour (cv_group), out-of-fold",
+  "distinct_hours": 85
+}
