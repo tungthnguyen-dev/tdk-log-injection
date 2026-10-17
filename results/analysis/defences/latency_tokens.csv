@@ -1,0 +1,7 @@
+model,condition,rows,latency_median_s,latency_mean_s,prompt_tokens_mean,output_tokens_mean
+Haiku 4.5,A,4464,1.537,1.567,313.808,90.596
+Haiku 4.5,B,4464,1.638,1.685,535.303,103.753
+Haiku 4.5,C,4464,1.696,1.761,631.163,109.738
+gemma4:e4b,A,1488,2.239,2.232,331.121,52.534
+gemma4:e4b,B,1488,2.79,2.812,548.569,59.285
+gemma4:e4b,C,1488,2.896,2.96,637.099,56.044
