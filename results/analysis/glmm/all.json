@@ -60,6 +60,18 @@
       "sd_payload": 0.00579892602954658,
       "bootstrap_ci_excludes_0": false,
       "mixed_ci_excludes_0": false
+    },
+    "H2-e4b": {
+      "estimate": 0.0034722222222243193,
+      "se": 0.009030942798749485,
+      "ci_low": -0.014228425663324672,
+      "ci_high": 0.02117287010777331,
+      "converged": true,
+      "n_cases": 1440,
+      "sd_event": 0.059935356187262305,
+      "sd_payload": 0.007084539036230115,
+      "bootstrap_ci_excludes_0": false,
+      "mixed_ci_excludes_0": false
     }
   }
 }
