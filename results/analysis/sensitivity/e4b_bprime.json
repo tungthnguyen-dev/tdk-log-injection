@@ -1,0 +1,89 @@
+{
+  "model": "gemma4:e4b",
+  "file": "results/runs/gemma4_e4b_v2_bprime_bclean.csv",
+  "infrastructure_errors": 0,
+  "duplicates_dropped": 0,
+  "contrast": "B' - BCLEAN (same session)",
+  "primary": {
+    "estimate": 0.0020833333333333333,
+    "ci_low": -0.002777777777777778,
+    "ci_high": 0.006944444444444444,
+    "p": 0.497,
+    "n_events": 48
+  },
+  "worst_case": {
+    "estimate": 0.0020833333333333333,
+    "ci_low": -0.002777777777777778,
+    "ci_high": 0.006944444444444444,
+    "p": 0.497,
+    "n_events": 48
+  },
+  "complete_case": {
+    "estimate": 0.0020833333333333333,
+    "ci_low": -0.002777777777777778,
+    "ci_high": 0.006944444444444444,
+    "p": 0.497,
+    "n_events": 48
+  },
+  "raw_flip": {
+    "estimate": 0.0020833333333333333,
+    "ci_low": -0.002777777777777778,
+    "ci_high": 0.006944444444444444,
+    "p": 0.497,
+    "n_events": 48
+  },
+  "control_gated": {
+    "estimate": 0.0020833333333333333,
+    "ci_low": -0.002777777777777778,
+    "ci_high": 0.006944444444444444,
+    "p": 0.497,
+    "n_events": 48
+  },
+  "control_gated_events": 48,
+  "icc": {
+    "icc": 0.006525807613145826,
+    "n_eff": 1210.8487804878057
+  },
+  "mcnemar": {
+    "discordant_1_not_0": 7,
+    "discordant_0_not_1": 4,
+    "mcnemar_midp": 0.3876953125
+  },
+  "n_cases": 1440,
+  "by_field": {
+    "referer": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "n_events": 48
+    },
+    "uri": {
+      "estimate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p": 1.0,
+      "n_events": 48
+    },
+    "user_agent": {
+      "estimate": 0.002976190476190476,
+      "ci_low": -0.003968253968253968,
+      "ci_high": 0.00992063492063492,
+      "p": 0.497,
+      "n_events": 48
+    }
+  },
+  "referer_check": {
+    "pairs": 240,
+    "same_answer": 240,
+    "share_same": 1.0
+  },
+  "referer_raw_identical": [
+    216,
+    240
+  ],
+  "bclean_session_agreement": [
+    1486,
+    1488
+  ]
+}
