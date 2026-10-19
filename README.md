@@ -33,7 +33,8 @@ The hypotheses (H1-H4), arms, outcomes and analysis plan are in
 new-arm output existed. Every later change is a dated entry under "Deviations" in the same file, with
 whether any outcome data had been seen. Prompt templates are frozen in `prompts/v1` and `prompts/v2`
 (hashes in the pre-registration addendum); every result row records its prompt hash and runner commit.
-The data used in the paper are tagged `data-freeze-v1`.
+When both authors have reviewed the final corrections, the data and analyses used in the paper are tagged
+`data-freeze-v1`; until that tag exists, `main` is the working state.
 
 ## Repository layout
 
@@ -83,7 +84,8 @@ All steps after step 3 are offline: they read the committed result files and mak
    ```bash
    python scripts/parse_logs.py
    python scripts/sample_events.py
-   python scripts/train_detector.py
+   python scripts/prepare_detector_data.py     # writes data/processed/events_detector_v1.csv
+   python scripts/train_detector.py            # writes the fold models to models/ (not committed)
    python scripts/make_injected_cases.py
    python scripts/make_benign_control.py
    python scripts/make_subset.py
@@ -105,38 +107,29 @@ All steps after step 3 are offline: they read the committed result files and mak
    Batch scripts used for the local runs: `scripts/run_e4b_v2.sh`, `scripts/run_ladder_subset.sh`,
    `scripts/run_srbh_e4b.sh`. Use a new `--out` file for every run that must not resume an old one.
 
-4. **Checks and analyses:**
+4. **Checks, analyses and figures** in one command (the script lists every step and its arguments):
    ```bash
-   python scripts/test_analyse_prereg.py          # synthetic checks + no-effect simulation
-   python scripts/analyse_prereg.py --stage v1    # validation on the A/B/C data
-   python scripts/analyse_prereg.py --stage all --e4b-v2 results/runs/gemma4_e4b_v2_bclean.csv \
-     results/runs/gemma4_e4b_v2_components.csv results/runs/gemma4_e4b_v2_components_benign.csv \
-     results/runs/gemma4_e4b_v2_dose.csv results/runs/gemma4_e4b_v2_dwrong.csv
-   python scripts/glmm_sensitivity.py --stage all --e4b-v2 results/runs/gemma4_e4b_v2_bclean.csv
-   python scripts/analyse_same_session.py --file results/runs/gemma4_e4b_v2_bprime_bclean.csv \
-     --compare results/runs/gemma4_e4b_v2_bclean.csv --out results/analysis/sensitivity/e4b_bprime.json
-   python scripts/analyse_ladder.py
-   python scripts/analyse_extension.py
-   python scripts/rescore_sanitised.py            # needs the detector models from step 2
-   python scripts/analyze_condition_c.py
+   PYTHON=.venv/bin/python bash scripts/rerun_analyses.sh
+   ```
+   It runs the synthetic checks and the no-effect simulation first, then every analysis, then the figures.
+   Two offline scripts run separately:
+   ```bash
+   python scripts/rescore_sanitised.py       # needs the detector models from step 2
+   python scripts/analyze_condition_c.py     # draws its figure with matplotlib
    ```
 
-5. **Figures:**
-   ```bash
-   python scripts/make_figures_haiku.py
-   python scripts/make_figures_combined.py
-   ```
-
-Re-running step 4 from the committed files reproduces every JSON and CSV file in `results/analysis/`
-exactly (checked at the data freeze). `analyze_condition_c.py` draws its figure with matplotlib.
+The analyses use fixed seeds: re-running `rerun_analyses.sh` on the committed result files reproduces the
+JSON files it writes in `results/analysis/` byte for byte (last checked on 19 Oct 2026).
 
 | Script | Output |
 |---|---|
+| `rerun_analyses.sh` | runs the scripts below in the right order (except the last three rows) |
 | `analyse_prereg.py` | H1-H4 with Holm, sensitivity analyses, exploratory arms, DOSE, DWRONG: `results/analysis/{v1,all}/results.json` |
 | `glmm_sensitivity.py` | mixed-model sensitivity (events and payloads random): `results/analysis/glmm/` |
 | `analyse_same_session.py` | same-session H2 check: `results/analysis/sensitivity/` |
 | `analyse_ladder.py` | model ladder and capability gradient: `results/analysis/ladder/results.json` |
 | `analyse_extension.py` | cloud-model extension: `results/analysis/extension/results.json` |
+| `make_figures_haiku.py`, `make_figures_combined.py` | paper figures (SVG + PNG): `results/figures/` |
 | `rescore_sanitised.py` | detector re-scored after C's input cleaning: `data/processed/detector_sanitised_v1.csv` |
 | `analyze_condition_c.py` | condition-C decomposition, floor replay, verdict-guard trade-off: `results/analysis/defences/` |
 | `check_v2_runs.py`, `detector_shift.py`, `latency_tokens.py` | validity checks and summaries (no outcomes read) |
