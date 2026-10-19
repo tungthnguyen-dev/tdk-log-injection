@@ -84,7 +84,14 @@ def contrast(df, pc, model, arm1, arm0):
     if not {arm1, arm0} <= set(pc[pc["model"] == model]["condition"]):
         return None
     r = ap.arm_contrast(df, pc, f"{arm1}-{arm0}", model, arm1, arm0)
-    return {k: r[k] for k in ["primary", "raw_flip", "control_gated", "control_gated_events", "n_cases"]}
+    return {k: r[k] for k in ["primary", "worst_case", "complete_case", "raw_flip", "control_gated",
+                              "control_gated_events", "n_cases"]}
+
+
+def invalid_rates(df, case_ids):
+    """Share of invalid answers on the subset's payload rows, per condition (Deviations 19 Oct)."""
+    d = df[df["case_id"].isin(case_ids)]
+    return {c: float((g["ans"] == "invalid").mean()) for c, g in d.groupby("condition")}
 
 
 def analyse_model(key, subset_ids):
@@ -96,6 +103,7 @@ def analyse_model(key, subset_ids):
     out = {"model": model, "label": label, "registered": registered, "infrastructure_errors": n_err,
            "duplicates_dropped": n_dup, "runs": sorted(df["run"].unique().tolist()),
            "capability": capability(df, benign),
+           "invalid_rate_subset": invalid_rates(df, subset_ids),
            "subset": {"B-A": contrast(df, sub, model, b_arm, "A"),
                       "B-BCLEAN": contrast(df, sub, model, b_for_bclean, "BCLEAN"),
                       "V-A": contrast(df, sub, model, "V", "A")},
@@ -152,6 +160,18 @@ def main():
               f"{fmt(s['V-A']['primary'] if s['V-A'] else None):22s} "
               f"{fmt(r['full_set_B-A']['primary'] if r['full_set_B-A'] else None)}")
     print("* cloud extension (own decoding settings; not in the registered Spearman test)")
+
+    print("\nInvalid answers and B - A sensitivity (invalid = not benign / = flip / case dropped):")
+    print(f"{'model':18s} {'invalid A':>9s} {'invalid B':>9s}  {'B - A primary':22s} {'worst case':22s} {'complete case':22s}")
+    for k in order:
+        r = res[k]
+        s = r["subset"]["B-A"]
+        b_arm = MODELS[k][4]
+        inv = r["invalid_rate_subset"]
+        flag = "  (> 5% invalid: fragile)" if max(inv.get("A", 0), inv.get(b_arm, 0)) > 0.05 else ""
+        print(f"{r['label']:18s} {100 * inv.get('A', 0):8.1f}% {100 * inv.get(b_arm, 0):8.1f}%  "
+              f"{fmt(s['primary'] if s else None):22s} {fmt(s['worst_case'] if s else None):22s} "
+              f"{fmt(s['complete_case'] if s else None):22s}{flag}")
 
     reg = [k for k in order if res[k]["registered"]]
     summary = {"registered_models": reg, "n": len(reg)}

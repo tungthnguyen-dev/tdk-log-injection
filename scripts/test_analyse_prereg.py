@@ -109,6 +109,21 @@ def test_runs_average_and_h4_shape():
     print("ok  per-case mean over runs and first-run table have one row per case and condition")
 
 
+def test_complete_case_strict():
+    """One invalid run makes the whole case missing in the complete-case analysis (Deviations 19 Oct)."""
+    rows = []
+    for r in range(3):
+        rows.append(row("e1", "none", "A", r, "malicious"))
+        rows.append(row("e1", "P01", "A", r, "benign" if r < 2 else "", ok=r < 2))   # run 2 invalid
+        rows.append(row("e1", "P02", "A", r, "benign"))
+    df, _, _ = load(rows)
+    pc = ap.per_case(ap.outcomes(df)).set_index("case_id")
+    assert np.isnan(pc.loc["e1_P01", "Yc"]), "a case with an invalid run must be missing"
+    assert abs(pc.loc["e1_P01", "Y"] - 2 / 3) < 1e-12, "primary still averages all runs (invalid = not benign)"
+    assert pc.loc["e1_P02", "Yc"] == 1.0
+    print("ok  complete case is strict: one invalid run removes the case; primary keeps all runs")
+
+
 def test_small_helpers():
     adj = ap.holm({"a": 0.01, "b": 0.04, "c": 0.03})
     assert np.allclose([adj["a"], adj["c"], adj["b"]], [0.03, 0.06, 0.06])
@@ -144,6 +159,7 @@ if __name__ == "__main__":
     test_known_effect_and_sign()
     test_group_diff_exact()
     test_runs_average_and_h4_shape()
+    test_complete_case_strict()
     test_small_helpers()
     if "--quick" not in sys.argv:
         test_null_false_positive_rate()

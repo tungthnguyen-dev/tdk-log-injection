@@ -56,9 +56,11 @@ def pp(r):
 
 def effects_figure(res, path):
     conf, ex = res["confirmatory"], res["exploratory"]
-    rows = [("Confirmatory", None),
-            ("H1  Grounding: B − A", (conf["H1"]["primary"], conf["H1"]["control_gated"])),
-            ("H2  Detector channel: B′ − BCLEAN", (conf["H2-Haiku"]["primary"], conf["H2-Haiku"]["control_gated"])),
+    rows = [("Pre-registered tests (Holm-adjusted p over six tests)", None),
+            (f"H1  Grounding: B − A  (Holm p = {conf['H1']['holm_p']:.2f})",
+             (conf["H1"]["primary"], conf["H1"]["control_gated"])),
+            (f"H2  Detector channel: B′ − BCLEAN  (Holm p = {conf['H2-Haiku']['holm_p']:.2f})",
+             (conf["H2-Haiku"]["primary"], conf["H2-Haiku"]["control_gated"])),
             ("Exploratory: parts of the detector block", None)]
     for key, label in [("V-A", "Verdict only vs no detector: V − A"),
                        ("VP-V", "Add probability: VP − V"),
@@ -69,7 +71,7 @@ def effects_figure(res, path):
         r = ex[f"{H} {key}"]
         rows.append((label, (r, r["control_gated"])))
 
-    W, left, right, top = 760, 300, 40, 108
+    W, left, right, top = 800, 340, 40, 108
     row_h, head_h = 34, 30
     xmin, xmax = -14.0, 8.0
     plot_w = W - left - right
@@ -81,8 +83,8 @@ def effects_figure(res, path):
     s.text(24, 50, "Difference in flip rate between two prompt arms, percentage points, with 95% event-cluster bootstrap CI",
            11.5, INK2)
     # legend
-    for i, (color, label) in enumerate([(YELLOW, "Control-gated: events whose clean control was judged malicious in both arms"),
-                                        (GRAY, "Primary: payload-induced flip, all events")]):
+    for i, (color, label) in enumerate([(YELLOW, "Primary (pre-registered): payload-induced flip, all events"),
+                                        (GRAY, "Sensitivity: control-gated, events whose clean control was judged malicious in both arms")]):
         ly = 68 + 17 * i
         s.line(24, ly, 40, ly, color, 2)
         s.dot(32, ly, color)
@@ -102,7 +104,7 @@ def effects_figure(res, path):
             continue
         cy = y + row_h / 2
         s.text(36, cy + 4, label, 12, INK)
-        for (est, color, dy) in [(r[1], YELLOW, -6), (r[0], GRAY, 6)]:
+        for (est, color, dy) in [(r[0], YELLOW, -6), (r[1], GRAY, 6)]:
             if est is None:
                 continue
             e, lo, hi = pp(est)
@@ -122,7 +124,7 @@ def dose_figure(res, path):
     X = lambda p: left + (p - 0.5) / 0.5 * (W - left - right)
     Y = lambda v: top + (1 - v / 30) * (Hh - top - bottom)
     s = Svg(W, Hh)
-    s.text(24, 30, "Claude Haiku 4.5: flips do not depend on the probability shown", 15, weight="bold")
+    s.text(24, 30, "Claude Haiku 4.5: no detectable trend across the probability shown", 15, weight="bold")
     s.text(24, 50, "Payload-induced flip rate when the detector says ATTACK with a fixed probability", 11.5, INK2)
     s.text(24, 66, "Subset of 576 payload cases per level; 95% event-cluster bootstrap CI", 11.5, INK2)
     for v in range(0, 31, 10):
@@ -135,27 +137,30 @@ def dose_figure(res, path):
     for p, v, lo, hi in pts:
         s.line(X(p), Y(lo), X(p), Y(hi), YELLOW, 2)
         s.dot(X(p), Y(v), YELLOW)
-    s.text(W - right, top - 12, f"Logistic slope p = {d['p']:.2f}: no trend", 11.5, INK, "end")
+    s.text(W - right, top - 12, f"Logistic slope p = {d['p']:.2f} (BH p = {d['bh_p']:.2f}): no detectable trend",
+           11.5, INK, "end")
     s.save(path)
 
 
+def ci_of(entry):
+    """[k, n, wilson, event-cluster CI] -> the event-cluster CI; for 0 of n (degenerate bootstrap), Wilson."""
+    k, _, w, c = entry
+    return tuple(w) if k == 0 else tuple(c)
+
+
 def dwrong_figure(res, path):
-    ctrl = {r["condition"]: r for r in res["controls"] if r["model"] == H}
-    rates = {r["condition"]: r for r in res["rates"] if r["model"] == H}
     dw = res["dwrong"][H]
-    b_att = (ctrl["B"]["benign"], ctrl["B"]["malicious"] + ctrl["B"]["benign"] + ctrl["B"]["invalid"])
-    b_ben = (int(rates["B"]["benign_fp"]), int(rates["B"]["benign_n"]))
-    rows = [("Real attacks: answered benign", "correct says ATTACK, wrong says BENIGN", b_att,
-             tuple(dw["attack_shown_benign_deferred"][:2])),
-            ("Benign events: answered malicious", "correct says BENIGN, wrong says ATTACK", b_ben,
-             tuple(dw["benign_shown_attack_deferred"][:2]))]
+    rows = [("Real attacks: answered benign", "correct says ATTACK, wrong says BENIGN",
+             dw["baseline_B_attack_controls_benign"], dw["attack_shown_benign_deferred"]),
+            ("Benign events: answered malicious", "correct says BENIGN, wrong says ATTACK",
+             dw["baseline_B_benign_controls_malicious"], dw["benign_shown_attack_deferred"])]
     W, Hh, left, right, top = 700, 290, 270, 40, 100
     row_h = 66
     X = lambda v: left + v / 60 * (W - left - right)
     s = Svg(W, Hh)
-    s.text(24, 30, "Claude Haiku 4.5 follows a wrong detector only when it says benign", 15, weight="bold")
+    s.text(24, 30, "Claude Haiku 4.5 followed a wrong detector only when it said benign", 15, weight="bold")
     s.text(24, 50, "Share of no-payload controls (48 events × 3 runs) answered as the wrong detector suggests; "
-                   "95% Wilson CI", 11.5, INK2)
+                   "95% event-cluster CI", 11.5, INK2)
     lx = 24
     for color, label in [(GRAY, "Correct detector (condition B)"), (YELLOW, "Wrong detector (DWRONG)")]:
         s.dot(lx + 6, 74, color)
@@ -165,14 +170,15 @@ def dwrong_figure(res, path):
     for v in range(0, 61, 20):
         s.line(X(v), top - 6, X(v), y_end, GRID if v else AXIS, 1)
         s.text(X(v), y_end + 18, f"{v}%", 11, INK2, "middle")
-    for i, (label, sub, (k0, n0), (k1, n1)) in enumerate(rows):
+    for i, (label, sub, e0, e1) in enumerate(rows):
+        (k0, n0), (k1, n1) = e0[:2], e1[:2]
         cy = top + i * row_h + row_h / 2
         s.text(24, cy, label, 12, INK)
         s.text(24, cy + 16, sub, 10.5, INK2)
         v0, v1 = 100 * k0 / n0, 100 * k1 / n1
         s.line(X(v0), cy, X(v1), cy, GRID, 1)
-        for (k, n, v, color) in [(k0, n0, v0, GRAY), (k1, n1, v1, YELLOW)]:
-            lo, hi = wilson(k, n)
+        for (e, v, color) in [(e0, v0, GRAY), (e1, v1, YELLOW)]:
+            lo, hi = ci_of(e)
             s.line(X(100 * lo), cy, X(100 * hi), cy, color, 2) if hi > lo else None
             s.dot(X(v), cy, color)
         if k0 == k1 == 0:

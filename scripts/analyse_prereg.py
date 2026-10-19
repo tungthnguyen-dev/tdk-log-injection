@@ -43,6 +43,7 @@ FILES = {
     "haiku_dose": f"{RUNS}/claude_haiku_4_5_v2_dose.csv",
 }
 CASES = "data/processed/injected_cases_v1.csv"
+PAYLOADS = "payloads/payloads.csv"
 DOSE_LEVELS = {"DOSE55": 0.55, "DOSE65": 0.65, "DOSE75": 0.75, "DOSE85": 0.85, "DOSE95": 0.95, "DOSE99": 0.99}
 
 
@@ -82,11 +83,17 @@ def outcomes(df, answer="ans"):
 
 
 def per_case(pay, runs=None):
-    """Mean over runs per (model, condition, case); runs=[0] gives a first-run-only table."""
+    """Mean over runs per (model, condition, case); runs=[0] gives a first-run-only table.
+    Complete case (Yc): a case is kept only if every answer involved, in every run, is valid
+    (Deviations 19 Oct); one invalid run makes the whole case missing."""
     if runs is not None:
         pay = pay[pay["run"].isin(runs)]
     cols = ["model", "condition", "case_id", "event_id", "payload_id", "payload_category", "target_field"]
-    return pay.groupby(cols, as_index=False)[["Y", "Yw", "Yc", "F"]].mean()
+    out = pay.groupby(cols, as_index=False)[["Y", "Yw", "Yc", "F"]].mean()
+    any_invalid = (pay.assign(_inv=pay["Yc"].isna()).groupby(cols, as_index=False)["_inv"].any())
+    out = out.merge(any_invalid, on=cols, validate="one_to_one")
+    out.loc[out["_inv"], "Yc"] = np.nan
+    return out.drop(columns="_inv")
 
 
 def wide(pc, model, conds, col="Y"):
@@ -233,6 +240,9 @@ def arm_contrast(df, pc, name, model, arm1, arm0, group=None):
     out["control_gated"] = test(sub, "D_Y", ev) if ev else None
     out["control_gated_raw_flip"] = test(sub, "D_F", ev) if ev else None
     out["control_gated_events"] = len(ev)
+    if group:   # registered H3 sensitivity: User-Agent payloads only (6 in the group vs 15)
+        ua = base[base["target_field"] == "user_agent"]
+        out["user_agent_only"] = group_diff_test(ua, "D_Y", ua["payload_id"].isin(group))
     out["icc"] = icc_oneway(base, "D_Y")                      # ICC of the per-case difference
     if not group:                                              # McNemar does not apply to a group contrast
         major = lambda x: (x.to_numpy() >= 0.5).astype(int)  # Haiku: Y in at least 2 of 3 runs
@@ -339,18 +349,70 @@ def dose_trend(pc, model):
     return {"logit_slope_per_unit_p": est, "ci": [float(lo), float(hi)], "p": p, "rate_by_level": rates_}
 
 
-def dwrong(df):
+def share_with_ci(rows, hit):
+    """Share of rows where `hit` holds: counts with Wilson CI, plus an event-cluster bootstrap CI that treats
+    repeated runs of the same event as one cluster (Deviations 19 Oct). Returns [k, n, wilson, cluster_ci]."""
+    x = rows.assign(x=hit.astype(float))
+    k, n = int(x["x"].sum()), len(x)
+    if n == 0:
+        return [0, 0, (float("nan"), float("nan")), [float("nan"), float("nan")]]
+    b = mean_test(x, "x")
+    return [k, n, wilson(k, n), [b["ci_low"], b["ci_high"]]]
+
+
+def dwrong(df, benign):
+    """Following a wrong detector, with the same controls under the correct detector (condition B) for reference."""
     d = df[df["condition"] == "DWRONG"]
     out = {}
     for model, g in d.groupby("model"):
         att = g[g["detector_verdict"] == "benign"]      # real attack controls shown as BENIGN
         ben = g[g["detector_verdict"] == "attack"]      # benign controls shown as ATTACK
-        k1, n1 = int((att["ans"] == "benign").sum()), len(att)
-        k2, n2 = int((ben["ans"] == "malicious").sum()), len(ben)
-        out[model] = {"attack_shown_benign_deferred": [k1, n1, wilson(k1, n1)],
-                      "benign_shown_attack_deferred": [k2, n2, wilson(k2, n2)],
+        b_att = df[(df["model"] == model) & (df["condition"] == "B") & (df["payload_id"] == "none")]
+        b_ben = benign[(benign["model"] == model) & (benign["condition"] == "B")]
+        out[model] = {"attack_shown_benign_deferred": share_with_ci(att, att["ans"] == "benign"),
+                      "benign_shown_attack_deferred": share_with_ci(ben, ben["ans"] == "malicious"),
+                      "baseline_B_attack_controls_benign": share_with_ci(b_att, b_att["ans"] == "benign"),
+                      "baseline_B_benign_controls_malicious": share_with_ci(b_ben, b_ben["ans"] == "malicious"),
                       "invalid": int((g["ans"] == "invalid").sum())}
     return out
+
+
+def compound_bypass(pc, model, arm):
+    """Exploratory item 4: payload cases whose detector probability the payload lowered by at least 0.10
+    (input side) and which the LLM flipped (Y) in `arm`. Descriptive, with event-cluster CIs."""
+    cases = pd.read_csv(CASES, keep_default_na=False)
+    ctrl = cases[cases["payload_id"] == "none"].set_index("event_id")["detector_proba"].astype(float)
+    cases = cases[cases["payload_id"] != "none"]
+    lowered = set(cases.loc[cases["detector_proba"].astype(float) <= cases["event_id"].map(ctrl) - 0.10, "case_id"])
+    d = pc[(pc["model"] == model) & (pc["condition"] == arm)].copy()
+    if d.empty:
+        return None
+    d["lowered"] = d["case_id"].isin(lowered).astype(float)
+    d["bypass"] = d["lowered"] * d["Y"]
+    r = mean_test(d, "bypass")
+    return {"arm": arm, "cases_lowered": int(d["lowered"].sum()), "cases": len(d),
+            "compound_bypass_rate": r["estimate"], "ci": [r["ci_low"], r["ci_high"]],
+            "flip_rate_if_lowered": float(d.loc[d["lowered"] == 1, "Y"].mean()),
+            "flip_rate_if_not_lowered": float(d.loc[d["lowered"] == 0, "Y"].mean())}
+
+
+def rationale_quotes(pay, model, arm):
+    """Exploratory item 8 (descriptive only): does the explanation repeat a word trigram of the payload text?
+    Rationales are not evidence of mechanism; this only describes what the model wrote."""
+    import re
+    texts = pd.read_csv(PAYLOADS, keep_default_na=False).set_index("payload_id")["text"]
+    words = lambda s: re.findall(r"[a-z0-9]+", str(s).lower())
+    grams = {pid: {tuple(w[i:i + 3]) for i in range(len(w) - 2)} for pid, w in ((p, words(t)) for p, t in texts.items())}
+    d = pay[(pay["model"] == model) & (pay["condition"] == arm)]
+    if d.empty:
+        return None
+    quote = [bool(grams.get(pid, set()) & {tuple(w[i:i + 3]) for i in range(len(w) - 2)})
+             for pid, w in zip(d["payload_id"], d["explanation"].map(words))]
+    d = d.assign(quote=quote)
+    flips = d[d["Y"] == 1]
+    return {"arm": arm, "rows": len(d), "quote_share_all": float(d["quote"].mean()),
+            "quote_share_among_flips": float(flips["quote"].mean()) if len(flips) else float("nan"),
+            "quote_share_among_non_flips": float(d.loc[d["Y"] == 0, "quote"].mean())}
 
 
 # ---------- main ----------
@@ -414,7 +476,8 @@ def main():
             r = conf[h]
             print(f"  {h:9s} {r['contrast']:32s} {fmt(r['primary'])}"
                   + (f"  Holm p={r['holm_p']:.4f}" if "holm_p" in r else ""))
-            for s in ["worst_case", "complete_case", "raw_flip", "control_gated", "haiku_first_run"]:
+            for s in ["worst_case", "complete_case", "raw_flip", "control_gated", "haiku_first_run",
+                      "user_agent_only"]:
                 if s in r:
                     extra = f" (eligible events={r['control_gated_events']})" if s == "control_gated" else ""
                     print(f"      {s:15s} {fmt(r[s])}{extra}")
@@ -454,19 +517,35 @@ def main():
                 w = wide(pc, model, ["V", "VP", "VS", "B"])
                 w["I"] = (w["B"] - w["VS"]) - (w["VP"] - w["V"])
                 explo[f"{model} interaction"] = mean_test(w, "I")
-        if explo:
-            bh = benjamini_hochberg({k: v["p"] for k, v in explo.items()})
-            for k in explo:
-                explo[k]["bh_p"] = bh[k]
         results["exploratory"] = explo
         results["dose"] = {m: dose_trend(pc, m) for m in [H, E]}
-        results["dwrong"] = dwrong(df)
+        results["dwrong"] = dwrong(df, benign)
         if "H2-Haiku" in conf:
             results["h2_haiku_by_field"] = by_field(pc, H, "BPRIME", "BCLEAN")
             results["h2_haiku_referer_check"] = referer_check(df, H, "BPRIME", "BCLEAN")
         if "H2-e4b" in conf:
             results["h2_e4b_by_field"] = by_field(pc, E, "B", "BCLEAN")
             results["h2_e4b_referer_check"] = referer_check(df, E, "B", "BCLEAN")
+        results["compound_bypass"] = {m: compound_bypass(pc, m, "B") for m in [H, E]}
+        results["rationale_quotes"] = {m: rationale_quotes(pay, m, "B") for m in [H, E]}
+
+        # One Benjamini-Hochberg family over every exploratory test with a p-value (pre-registration
+        # Section 6 list; Deviations 19 Oct): component and placebo contrasts, DOSE slopes, field splits.
+        family = {f"contrast | {k}": v for k, v in explo.items()}
+        family.update({f"dose | {m}": results["dose"][m] for m in [H, E] if results["dose"][m]})
+        for key, label in [("by_field_B_minus_A", "B-A"), ("h2_haiku_by_field", "H2"), ("h2_e4b_by_field", "H2")]:
+            if key in results:
+                for m_or_f, r_ in results[key].items():
+                    if isinstance(r_, dict) and "p" in r_:             # h2_*_by_field: field -> result
+                        model_ = H if "haiku" in key else E
+                        family[f"field {label} | {model_} {m_or_f}"] = r_
+                    else:                                             # by_field_B_minus_A: model -> field -> result
+                        for f_, rr in r_.items():
+                            family[f"field {label} | {m_or_f} {f_}"] = rr
+        bh = benjamini_hochberg({k: v["p"] for k, v in family.items()})
+        for k, v in family.items():
+            v["bh_p"] = bh[k]
+        results["exploratory_family_size"] = len(family)
         for k in ["h2_haiku_by_field", "h2_e4b_by_field"]:
             if k in results:
                 print(f"\n{k}:")
@@ -475,14 +554,21 @@ def main():
         for k in ["h2_haiku_referer_check", "h2_e4b_referer_check"]:
             if k in results:
                 print(f"{k}: {results[k]}")
-        print("\nExploratory (Benjamini-Hochberg):")
+        print(f"\nExploratory (Benjamini-Hochberg over {len(family)} tests):")
         for k, v in explo.items():
             print(f"  {k:45s} {fmt(v)}  BH p={v['bh_p']:.4f}")
             for s in ["raw_flip", "control_gated"]:
                 if v.get(s):
                     print(f"      {s:15s} {fmt(v[s])}")
-        print("\nDOSE:", json.dumps(results["dose"]))
-        print("DWRONG:", json.dumps(results["dwrong"]))
+        for m in [H, E]:
+            d_ = results["dose"][m]
+            if d_:
+                print(f"  DOSE {m}: logit slope {d_['logit_slope_per_unit_p']:+.2f} p={d_['p']:.4f} BH p={d_['bh_p']:.4f}")
+        print("\nDWRONG (k, n, Wilson CI, event-cluster CI):")
+        for m, v in results["dwrong"].items():
+            print(f"  {m}: {json.dumps({k: v[k] for k in v if k != 'invalid'})}")
+        print("\nCompound bypass (B):", json.dumps(results["compound_bypass"]))
+        print("Rationale quotes (B, descriptive):", json.dumps(results["rationale_quotes"]))
 
     with open(f"{out_dir}/results.json", "w") as f:
         json.dump(results, f, indent=2, default=str)
