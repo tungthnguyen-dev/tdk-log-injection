@@ -343,3 +343,8 @@ The runner registry must map condition VS to template VS (it named it VPS before
   the talk or a later preprint, marked as not part of the paper. If a model or setting is unavailable
   (e.g. gemini-2.5-flash access, or the API rejecting a setting), that is recorded here before any
   replacement, and no other model is substituted silently.
+- 19 Oct 2026: correction to the 16 Oct Referer note (written after the 18 Oct same-session result). gemma4:e4b verdicts are stable (240/240 Referer
+  verdicts identical within a session, 1,486/1,488 BCLEAN verdicts identical across sessions), but its
+  wording varies with Ollama's prompt-cache state even within a session (216/240 identical Referer
+  outputs in the same-session B'/BCLEAN run). "Deterministic within a session" in the 16 Oct note refers to
+  repeated identical call sequences only (the 300/300 check). No result changes: Y depends on the verdict.
