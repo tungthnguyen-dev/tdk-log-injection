@@ -8,3 +8,5 @@ scikit-learn==1.9.1
 shap==0.52.0
 statsmodels==0.15.0
 google-genai==2.31.0
+matplotlib==3.11.2
+scipy==1.18.1
