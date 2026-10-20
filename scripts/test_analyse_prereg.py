@@ -131,11 +131,16 @@ def test_small_helpers():
     assert np.allclose([bh["a"], bh["c"], bh["b"]], [0.03, 0.04, 0.04])
     m = ap.mcnemar_midp(np.array([1] * 5 + [0] * 1 + [0] * 4), np.array([0] * 5 + [1] * 1 + [0] * 4))
     assert m["discordant_1_not_0"] == 5 and m["discordant_0_not_1"] == 1 and abs(m["mcnemar_midp"] - 0.125) < 1e-12
+    q = ap.cochran_q([[1, 0, 0]] * 6 + [[1, 1, 0]] * 2 + [[0, 0, 0]] * 2)          # worked by hand: Q = 13
+    assert abs(q["q"] - 13.0) < 1e-12 and q["df"] == 2 and abs(q["p"] - np.exp(-6.5)) < 1e-12, q
+    q2 = ap.cochran_q([[1, 0]] * 5 + [[0, 1]] + [[0, 0]] * 4)                    # k = 2: McNemar chi-square
+    assert abs(q2["q"] - (5 - 1) ** 2 / 6) < 1e-12, q2
     d = pd.DataFrame({"event_id": ["a"] * 3 + ["b"] * 3, "x": [1, 1, 1, 0, 0, 0]})
     assert abs(ap.icc_oneway(d, "x")["icc"] - 1.0) < 1e-12
     allzero = ap.boot({"num": np.zeros(5), "den": np.ones(5)}, lambda s: s["num"] / s["den"], B=200)
     assert allzero["p"] == 1.0, "p must be capped at 1"
-    print("ok  Holm, Benjamini-Hochberg, McNemar mid-p (5 vs 1 -> 0.125), ICC, p capped at 1")
+    print("ok  Holm, Benjamini-Hochberg, McNemar mid-p (5 vs 1 -> 0.125), Cochran's Q (hand-worked 13; "
+          "k = 2 equals McNemar), ICC, p capped at 1")
 
 
 def test_null_false_positive_rate(n_sims=400, B=2000):

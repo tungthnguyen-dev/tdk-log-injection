@@ -12,8 +12,14 @@ df = pd.read_csv(SRC, keep_default_na=False)
 assert len(df) == 700, f"Expected 700 events, got {len(df)}"
 
 # Path traversal requests rejected by nginx (400) are logged with empty
-# uri, user_agent and exp_id, so parse_logs.py left attack_type empty.
-rejected = (df["label"] == "attack") & (df["attack_type"] == "")
+# uri, user_agent and exp_id. The first events_labelled.csv left their attack_type
+# empty; data v1.1 (7 Oct) fills it in and adds the nginx_rejected flag. Read the
+# flag when it is there; the output keeps it as the last column either way.
+if "nginx_rejected" in df.columns:
+    rejected = df.pop("nginx_rejected").astype(str).eq("True")
+else:
+    rejected = (df["label"] == "attack") & (df["attack_type"] == "")
+assert rejected.sum() == 30, f"Expected 30 nginx-rejected rows, got {rejected.sum()}"
 assert (df.loc[rejected, "status"] == 400).all(), "Unexpected status in rejected rows"
 assert (df.loc[rejected, "uri"] == "").all(), "Rejected rows should have empty uri"
 

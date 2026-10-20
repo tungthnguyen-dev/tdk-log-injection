@@ -148,6 +148,9 @@ def ci_of(entry):
     return tuple(w) if k == 0 else tuple(c)
 
 
+ZERO_NOTE = "For 0 of n the event-cluster bootstrap has no spread, so the Wilson 95% CI is shown instead."
+
+
 def dwrong_figure(res, path):
     dw = res["dwrong"][H]
     rows = [("Real attacks: answered benign", "correct says ATTACK, wrong says BENIGN",
@@ -186,6 +189,8 @@ def dwrong_figure(res, path):
         else:
             s.text(X(v0), cy - 12, f"{v0:.0f}% ({k0}/{n0})", 11, INK, "middle")
             s.text(X(v1), cy - 12, f"{v1:.0f}% ({k1}/{n1})", 11, INK, "middle")
+    if any(e[0] == 0 for _, _, e0, e1 in rows for e in (e0, e1)):
+        s.text(24, y_end + 44, ZERO_NOTE, 10.5, INK2)
     s.save(path)
 
 
