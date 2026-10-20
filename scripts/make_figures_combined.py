@@ -12,7 +12,7 @@ import os
 import subprocess
 
 import analyse_prereg as ap
-from make_figures_haiku import AXIS, BLUE, GRAY, GRID, INK, INK2, SRC, YELLOW, Svg, ci_of
+from make_figures_haiku import AXIS, BLUE, GRAY, GRID, INK, INK2, SRC, YELLOW, ZERO_NOTE, Svg, ci_of
 
 OUT = "results/figures"
 H, E = "claude-haiku-4-5-20251001", "gemma4:e4b"
@@ -140,7 +140,7 @@ def dwrong(res, path):
     W, left, right, top, row_h, head_h = 800, 250, 100, 104, 40, 30
     X = lambda v: left + v / 60 * (W - left - right)
     y_end = top + sum(head_h if r is None else row_h for _, r in rows)
-    s = Svg(W, y_end + 44)
+    s = Svg(W, y_end + 74)
     s.text(24, 30, "A wrong detector was followed towards benign by both models, towards attack only by Gemma",
            15, weight="bold")
     s.text(24, 50, "Share of no-payload controls answered as the wrong detector suggests "
@@ -176,6 +176,8 @@ def dwrong(res, path):
         else:
             s.text(X(100 * ci_of(e1)[1]) + 8, cy + 4, f"{v1:.0f}% ({k1}/{n1})", 11, INK)
         y += row_h
+    if any(e[0] == 0 for _, r in rows if r for e in r[:2]):
+        s.text(24, y_end + 44, ZERO_NOTE, 10.5, INK2)
     s.save(path)
 
 

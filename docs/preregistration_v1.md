@@ -361,3 +361,8 @@ The runner registry must map condition VS to template VS (it named it VPS before
   B - A result is fragile (primary +5.0, worst case -6.2, complete case -2.9 pp). (g) Figures show the
   pre-registered primary outcome first, with Holm or BH p-values, and say "no detectable trend" rather than
   "no effect". No confirmatory decision changes: as before, no test survives Holm.
+- 20 Oct 2026: Cochran's Q, listed in Section 6 as the omnibus test across A/B/C and across V/VP/VS/B, had
+  not been computed. It is now reported for each anchor model, on the payload-induced flip (Haiku: a flip in
+  at least 2 of 3 runs, as for McNemar). Like McNemar it ignores clustering, so it is descriptive only,
+  outside Holm and Benjamini-Hochberg, and decides nothing. Added after all results had been seen; no LLM
+  calls and no data change.
