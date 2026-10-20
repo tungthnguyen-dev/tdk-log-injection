@@ -79,16 +79,14 @@ def invalid_causes(df):
 
 
 def dwrong_with_baseline(df, benign):
-    d = ap.dwrong(df)
+    """DWRONG deference and the condition-B baselines from analyse_prereg.dwrong: each entry is
+    [k, n, Wilson CI, event-cluster CI] (Deviations 19 Oct). The older key names are kept for the baselines."""
+    d = ap.dwrong(df, benign)
     if not d:
         return None
     (model, r), = d.items()
-    att_b = df[(df["condition"] == "B") & (df["payload_id"] == "none")]
-    k0, n0 = int((att_b["ans"] == "benign").sum()), len(att_b)
-    ben_b = benign[benign["condition"] == "B"]
-    k1, n1 = int((ben_b["ans"] == "malicious").sum()), len(ben_b)
-    return {**r, "baseline_B_attack_controls_answered_benign": [k0, n0, ap.wilson(k0, n0)],
-            "baseline_B_benign_controls_answered_malicious": [k1, n1, ap.wilson(k1, n1)]}
+    return {**r, "baseline_B_attack_controls_answered_benign": r["baseline_B_attack_controls_benign"],
+            "baseline_B_benign_controls_answered_malicious": r["baseline_B_benign_controls_malicious"]}
 
 
 def contrast_block(df, pc, model, arm1, arm0, name):

@@ -348,3 +348,16 @@ The runner registry must map condition VS to template VS (it named it VPS before
   wording varies with Ollama's prompt-cache state even within a session (216/240 identical Referer
   outputs in the same-session B'/BCLEAN run). "Deterministic within a session" in the 16 Oct note refers to
   repeated identical call sequences only (the 300/300 check). No result changes: Y depends on the verdict.
+- 19 Oct 2026: analysis corrections after an independent review of the repository. Made after all results
+  had been seen; no LLM calls and no data change. (a) Complete case is strict: a case with an invalid answer
+  in any run is excluded (before, its valid runs were averaged). (b) DWRONG and its condition-B baselines also
+  get event-cluster bootstrap CIs, because repeated runs of one event are not independent; Wilson CIs on the
+  counts are kept. (c) Benjamini-Hochberg is applied once over all 30 exploratory tests with a p-value
+  (component and placebo contrasts, DOSE slopes, field splits of B - A and of H2), as Section 6 lists; before,
+  it covered only the contrasts. (d) The registered H3 sensitivity on User-Agent payloads only (6 vs 15), which
+  was missing, is now reported. (e) Two registered descriptive analyses are added: compound bypass (Section 6,
+  item 4) and whether explanations quote the payload (item 8). (f) The model ladder reports invalid-answer
+  rates and worst-case and complete-case results: gemma4:e2b gives invalid answers in 25-33% of cases, so its
+  B - A result is fragile (primary +5.0, worst case -6.2, complete case -2.9 pp). (g) Figures show the
+  pre-registered primary outcome first, with Holm or BH p-values, and say "no detectable trend" rather than
+  "no effect". No confirmatory decision changes: as before, no test survives Holm.

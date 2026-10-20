@@ -411,6 +411,13 @@
         "n_events": 38
       },
       "control_gated_events": 38,
+      "user_agent_only": {
+        "estimate": 0.06458333333333334,
+        "ci_low": -0.0076388888888888895,
+        "ci_high": 0.12987847222222199,
+        "p": 0.0744,
+        "n_events": 48
+      },
       "icc": {
         "icc": 0.3165301677963361,
         "n_eff": 141.46251797804047
@@ -465,6 +472,13 @@
         "n_events": 40
       },
       "control_gated_events": 40,
+      "user_agent_only": {
+        "estimate": 0.03935185185185186,
+        "ci_low": -0.0046296296296296224,
+        "ci_high": 0.08217592592592593,
+        "p": 0.078,
+        "n_events": 48
+      },
       "icc": {
         "icc": 0.21042791271992498,
         "n_eff": 202.7480964467005
@@ -1442,21 +1456,24 @@
         "ci_low": -0.04861111111111112,
         "ci_high": 0.14305555555555555,
         "p": 0.299,
-        "n_events": 48
+        "n_events": 48,
+        "bh_p": 0.4721052631578947
       },
       "uri": {
         "estimate": -0.015625,
         "ci_low": -0.03993055555555555,
         "ci_high": 0.006944444444444443,
         "p": 0.1922,
-        "n_events": 48
+        "n_events": 48,
+        "bh_p": 0.41185714285714287
       },
       "user_agent": {
         "estimate": -0.04894179894179894,
         "ci_low": -0.0982225529100529,
         "ci_high": 0.00033068783068783305,
         "p": 0.0532,
-        "n_events": 48
+        "n_events": 48,
+        "bh_p": 0.13299999999999998
       }
     },
     "gemma4:e4b": {
@@ -1465,21 +1482,24 @@
         "ci_low": -0.18333333333333332,
         "ci_high": -0.04583333333333333,
         "p": 0.0001,
-        "n_events": 48
+        "n_events": 48,
+        "bh_p": 0.001
       },
       "uri": {
         "estimate": -0.052083333333333336,
         "ci_low": -0.11458333333333333,
         "ci_high": -0.005208333333333333,
         "p": 0.0324,
-        "n_events": 48
+        "n_events": 48,
+        "bh_p": 0.08836363636363637
       },
       "user_agent": {
         "estimate": -0.16765873015873015,
         "ci_low": -0.25496031746031744,
         "ci_high": -0.08333333333333333,
         "p": 0.0001,
-        "n_events": 48
+        "n_events": 48,
+        "bh_p": 0.001
       }
     }
   },
@@ -1531,7 +1551,7 @@
         "n_events": 45
       },
       "control_gated_events": 45,
-      "bh_p": 0.9052
+      "bh_p": 1.0
     },
     "claude-haiku-4-5-20251001 B-VS": {
       "estimate": -0.003009259259259261,
@@ -1554,7 +1574,7 @@
         "n_events": 39
       },
       "control_gated_events": 39,
-      "bh_p": 0.9052
+      "bh_p": 1.0
     },
     "claude-haiku-4-5-20251001 VS-V": {
       "estimate": -0.06944444444444445,
@@ -1577,7 +1597,7 @@
         "n_events": 39
       },
       "control_gated_events": 39,
-      "bh_p": 0.0032
+      "bh_p": 0.003
     },
     "claude-haiku-4-5-20251001 B-VP": {
       "estimate": -0.07106481481481482,
@@ -1600,7 +1620,7 @@
         "n_events": 40
       },
       "control_gated_events": 40,
-      "bh_p": 0.02944
+      "bh_p": 0.03933333333333333
     },
     "claude-haiku-4-5-20251001 PLACEBO-A": {
       "estimate": -0.021296296296296296,
@@ -1623,7 +1643,7 @@
         "n_events": 43
       },
       "control_gated_events": 43,
-      "bh_p": 0.38752
+      "bh_p": 0.4274117647058824
     },
     "claude-haiku-4-5-20251001 PLACEBO-B": {
       "estimate": 0.00648148148148148,
@@ -1646,7 +1666,7 @@
         "n_events": 40
       },
       "control_gated_events": 40,
-      "bh_p": 0.9052
+      "bh_p": 1.0
     },
     "claude-haiku-4-5-20251001 V-A": {
       "estimate": 0.04467592592592593,
@@ -1669,7 +1689,7 @@
         "n_events": 44
       },
       "control_gated_events": 44,
-      "bh_p": 0.0016
+      "bh_p": 0.001
     },
     "claude-haiku-4-5-20251001 interaction": {
       "estimate": -0.001620370370370372,
@@ -1677,7 +1697,7 @@
       "ci_high": 0.04212962962962962,
       "p": 0.8854,
       "n_events": 48,
-      "bh_p": 0.9052
+      "bh_p": 1.0
     },
     "gemma4:e4b VP-V": {
       "estimate": -0.005555555555555556,
@@ -1700,7 +1720,7 @@
         "n_events": 45
       },
       "control_gated_events": 45,
-      "bh_p": 0.38752
+      "bh_p": 0.4274117647058824
     },
     "gemma4:e4b B-VS": {
       "estimate": -0.0006944444444444445,
@@ -1723,7 +1743,7 @@
         "n_events": 48
       },
       "control_gated_events": 48,
-      "bh_p": 0.9052
+      "bh_p": 1.0
     },
     "gemma4:e4b VS-V": {
       "estimate": -0.05555555555555555,
@@ -1746,7 +1766,7 @@
         "n_events": 45
       },
       "control_gated_events": 45,
-      "bh_p": 0.031466666666666664
+      "bh_p": 0.03933333333333333
     },
     "gemma4:e4b B-VP": {
       "estimate": -0.050694444444444445,
@@ -1769,7 +1789,7 @@
         "n_events": 45
       },
       "control_gated_events": 45,
-      "bh_p": 0.024
+      "bh_p": 0.03
     },
     "gemma4:e4b PLACEBO-A": {
       "estimate": -0.052083333333333336,
@@ -1792,7 +1812,7 @@
         "n_events": 38
       },
       "control_gated_events": 38,
-      "bh_p": 0.3608
+      "bh_p": 0.41185714285714287
     },
     "gemma4:e4b PLACEBO-B": {
       "estimate": 0.09027777777777778,
@@ -1815,7 +1835,7 @@
         "n_events": 42
       },
       "control_gated_events": 42,
-      "bh_p": 0.0096
+      "bh_p": 0.0108
     },
     "gemma4:e4b V-A": {
       "estimate": -0.08611111111111111,
@@ -1838,7 +1858,7 @@
         "n_events": 38
       },
       "control_gated_events": 38,
-      "bh_p": 0.055771428571428576
+      "bh_p": 0.07320000000000002
     },
     "gemma4:e4b interaction": {
       "estimate": 0.004861111111111111,
@@ -1846,7 +1866,7 @@
       "ci_high": 0.014583333333333334,
       "p": 0.3358,
       "n_events": 48,
-      "bh_p": 0.4884363636363636
+      "bh_p": 0.5037
     }
   },
   "dose": {
@@ -1864,7 +1884,8 @@
         "DOSE85": 0.18229166666666666,
         "DOSE95": 0.17708333333333334,
         "DOSE99": 0.19444444444444445
-      }
+      },
+      "bh_p": 0.7871428571428571
     },
     "gemma4:e4b": {
       "logit_slope_per_unit_p": -1.0855344590932539,
@@ -1880,7 +1901,8 @@
         "DOSE85": 0.15104166666666666,
         "DOSE95": 0.14583333333333334,
         "DOSE99": 0.13368055555555555
-      }
+      },
+      "bh_p": 0.03933333333333333
     }
   },
   "dwrong": {
@@ -1891,6 +1913,10 @@
         [
           0.33933121516324877,
           0.4983328793811826
+        ],
+        [
+          0.2708333333333333,
+          0.5625
         ]
       ],
       "benign_shown_attack_deferred": [
@@ -1899,6 +1925,34 @@
         [
           0.0,
           0.025984567266588023
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "baseline_B_attack_controls_benign": [
+        21,
+        144,
+        [
+          0.09740386921789695,
+          0.21266853259593627
+        ],
+        [
+          0.0625,
+          0.25
+        ]
+      ],
+      "baseline_B_benign_controls_malicious": [
+        0,
+        144,
+        [
+          0.0,
+          0.025984567266588023
+        ],
+        [
+          0.0,
+          0.0
         ]
       ],
       "invalid": 0
@@ -1910,6 +1964,10 @@
         [
           0.23433457112685735,
           0.4956120354593591
+        ],
+        [
+          0.22916666666666666,
+          0.5
         ]
       ],
       "benign_shown_attack_deferred": [
@@ -1918,6 +1976,34 @@
         [
           0.13307691028989044,
           0.36539535908451154
+        ],
+        [
+          0.125,
+          0.3541666666666667
+        ]
+      ],
+      "baseline_B_attack_controls_benign": [
+        0,
+        48,
+        [
+          0.0,
+          0.0741026511527422
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "baseline_B_benign_controls_malicious": [
+        0,
+        48,
+        [
+          0.0,
+          0.0741026511527422
+        ],
+        [
+          0.0,
+          0.0
         ]
       ],
       "invalid": 0
@@ -1929,21 +2015,24 @@
       "ci_low": 0.0,
       "ci_high": 0.0,
       "p": 1.0,
-      "n_events": 48
+      "n_events": 48,
+      "bh_p": 1.0
     },
     "uri": {
       "estimate": -0.015625,
       "ci_low": -0.041666666666666664,
       "ci_high": 0.0,
       "p": 0.267,
-      "n_events": 48
+      "n_events": 48,
+      "bh_p": 0.445
     },
     "user_agent": {
       "estimate": -0.002976190476190476,
       "ci_low": -0.01488095238095238,
       "ci_high": 0.008928571428571428,
       "p": 0.6796,
-      "n_events": 48
+      "n_events": 48,
+      "bh_p": 0.9267272727272726
     }
   },
   "h2_haiku_referer_check": {
@@ -1957,26 +2046,72 @@
       "ci_low": 0.0,
       "ci_high": 0.0,
       "p": 1.0,
-      "n_events": 48
+      "n_events": 48,
+      "bh_p": 1.0
     },
     "uri": {
       "estimate": 0.0,
       "ci_low": 0.0,
       "ci_high": 0.0,
       "p": 1.0,
-      "n_events": 48
+      "n_events": 48,
+      "bh_p": 1.0
     },
     "user_agent": {
       "estimate": 0.00496031746031746,
       "ci_low": -0.001984126984126984,
       "ci_high": 0.012896825396825396,
       "p": 0.2236,
-      "n_events": 48
+      "n_events": 48,
+      "bh_p": 0.4274117647058824
     }
   },
   "h2_e4b_referer_check": {
     "pairs": 240,
     "same_answer": 240,
     "share_same": 1.0
-  }
+  },
+  "compound_bypass": {
+    "claude-haiku-4-5-20251001": {
+      "arm": "B",
+      "cases_lowered": 813,
+      "cases": 1440,
+      "compound_bypass_rate": 0.06967592592592592,
+      "ci": [
+        0.05023148148148148,
+        0.09074074074074073
+      ],
+      "flip_rate_if_lowered": 0.12341123411234113,
+      "flip_rate_if_not_lowered": 0.14088250930356191
+    },
+    "gemma4:e4b": {
+      "arm": "B",
+      "cases_lowered": 813,
+      "cases": 1440,
+      "compound_bypass_rate": 0.10138888888888889,
+      "ci": [
+        0.08402777777777778,
+        0.12083333333333333
+      ],
+      "flip_rate_if_lowered": 0.1795817958179582,
+      "flip_rate_if_not_lowered": 0.03349282296650718
+    }
+  },
+  "rationale_quotes": {
+    "claude-haiku-4-5-20251001": {
+      "arm": "B",
+      "rows": 4320,
+      "quote_share_all": 0.07569444444444444,
+      "quote_share_among_flips": 0.2915194346289753,
+      "quote_share_among_non_flips": 0.043153969099627064
+    },
+    "gemma4:e4b": {
+      "arm": "B",
+      "rows": 1440,
+      "quote_share_all": 0.10138888888888889,
+      "quote_share_among_flips": 0.8143712574850299,
+      "quote_share_among_non_flips": 0.007855459544383346
+    }
+  },
+  "exploratory_family_size": 30
 }

@@ -1,7 +1,8 @@
 """Combined figures, Claude Haiku 4.5 vs gemma4:e4b, from results/analysis/all/results.json.
 Same drawing helpers as make_figures_haiku.py (SVG; PNG copies via macOS Quick Look).
 One contrast is not stored in results.json and is computed here with analyse_prereg.py:
-gemma4:e4b B - A, control-gated (the same function as every other contrast).
+gemma4:e4b B - A (the same function as every other contrast). The effects figure shows the pre-registered
+primary outcome; control-gated sensitivity results are in results.json and the Haiku-only figure.
 
 Usage:
     python scripts/make_figures_combined.py
@@ -11,7 +12,7 @@ import os
 import subprocess
 
 import analyse_prereg as ap
-from make_figures_haiku import AXIS, BLUE, GRAY, GRID, INK, INK2, SRC, YELLOW, Svg, wilson
+from make_figures_haiku import AXIS, BLUE, GRAY, GRID, INK, INK2, SRC, YELLOW, Svg, ci_of
 
 OUT = "results/figures"
 H, E = "claude-haiku-4-5-20251001", "gemma4:e4b"
@@ -30,15 +31,14 @@ def legend(s, y, items, x=24, gap=26):
         x += 24 + 6.4 * len(label) + gap
 
 
-def gated(res, key):
-    r = res["exploratory"][key]
-    return r["control_gated"]
+def primary(res, key):
+    return res["exploratory"][key]           # the primary estimate (estimate, ci_low, ci_high, p, bh_p)
 
 
-def e4b_b_minus_a_gated():
+def e4b_b_minus_a():
     df, _, _ = ap.load_runs([ap.FILES["e4b_v1"]])
     pc = ap.per_case(ap.outcomes(df))
-    return ap.arm_contrast(df, pc, "e4b B-A", E, "B", "A")["control_gated"]
+    return ap.arm_contrast(df, pc, "e4b B-A", E, "B", "A")["primary"]
 
 
 def flip(r):
@@ -48,30 +48,32 @@ def flip(r):
 
 def effects(res, path):
     conf = res["confirmatory"]
-    rows = [("Confirmatory and grounding overall", None),
-            ("Grounding overall: B − A", {H: conf["H1"]["control_gated"], E: e4b_b_minus_a_gated()}),
-            ("H2 detector channel: B − BCLEAN", {H: conf["H2-Haiku"]["control_gated"],
-                                                     E: conf["H2-e4b"]["control_gated"]}),
+    h2 = f"Holm p = {conf['H2-Haiku']['holm_p']:.2f} / {conf['H2-e4b']['holm_p']:.2f}"
+    rows = [("Grounding and the detector channel", None),
+            ("Grounding overall: B − A (H1 for Haiku)", {H: conf["H1"]["primary"], E: e4b_b_minus_a()}),
+            (f"H2 detector channel: B − BCLEAN ({h2})", {H: conf["H2-Haiku"]["primary"],
+                                                         E: conf["H2-e4b"]["primary"]}),
             ("Parts of the detector block (exploratory)", None)]
     for key, label in [("V-A", "Verdict only vs no detector: V − A"),
                        ("VP-V", "Add probability: VP − V"),
                        ("VS-V", "Add SHAP: VS − V"),
                        ("PLACEBO-A", "Empty detector box: PLACEBO − A")]:
-        rows.append((label, {m: gated(res, f"{m} {key}") for m, _, _ in MODELS}))
+        rows.append((label, {m: primary(res, f"{m} {key}") for m, _, _ in MODELS}))
     rows.append(("Real detector content: B − PLACEBO",
-                 {m: flip(gated(res, f"{m} PLACEBO-B")) for m, _, _ in MODELS}))
+                 {m: flip(primary(res, f"{m} PLACEBO-B")) for m, _, _ in MODELS}))
 
-    W, left, right, top, row_h, head_h = 800, 330, 56, 104, 36, 30
-    xmin, xmax = -32.0, 10.0
+    W, left, right, top, row_h, head_h = 800, 360, 50, 104, 36, 30
+    xmin, xmax = -24.0, 10.0
     X = lambda v: left + (v - xmin) / (xmax - xmin) * (W - left - right)
     y_end = top + sum(head_h if r is None else row_h for _, r in rows)
     s = Svg(W, y_end + 62)
     s.text(24, 30, "What the detector block does to flips: Claude Haiku 4.5 vs Gemma 4 e4b", 15, weight="bold")
-    s.text(24, 50, "Control-gated difference in flip rate (events whose clean control was judged malicious in "
-                   "both arms),", 11.5, INK2)
-    s.text(24, 66, "percentage points, 95% event-cluster bootstrap CI", 11.5, INK2)
+    s.text(24, 50, "Difference in payload-induced flip rate (pre-registered primary outcome), percentage points,",
+           11.5, INK2)
+    s.text(24, 66, "95% event-cluster bootstrap CI; control-gated sensitivity results are reported in the text",
+           11.5, INK2)
     legend(s, 86, [(c, name) for _, name, c in MODELS])
-    for t in range(-30, 11, 10):
+    for t in range(-20, 11, 10):
         s.line(X(t), top - 4, X(t), y_end, GRID if t else AXIS, 1)
         s.text(X(t), y_end + 18, minus(t), 11, INK2, "middle")
     s.text(X(xmin), y_end + 38, "← fewer flips", 11, INK2, "start")
@@ -94,11 +96,12 @@ def effects(res, path):
 
 def dose(res, path):
     levels = [("DOSE55", 0.55), ("DOSE65", 0.65), ("DOSE75", 0.75), ("DOSE85", 0.85), ("DOSE95", 0.95), ("DOSE99", 0.99)]
-    W, Hh, left, right, top, bottom = 700, 400, 70, 170, 104, 70
+    W, Hh, left, right, top, bottom = 800, 400, 70, 250, 104, 70
     X = lambda p: left + (p - 0.5) / 0.5 * (W - left - right)
     Y = lambda v: top + (1 - v / 30) * (Hh - top - bottom)
     s = Svg(W, Hh)
-    s.text(24, 30, "Gemma 4 e4b reacts to the probability shown; Claude Haiku 4.5 does not", 15, weight="bold")
+    s.text(24, 30, "Gemma 4 e4b's flips fall as the probability shown rises; no detectable trend for Haiku 4.5",
+           15, weight="bold")
     s.text(24, 50, "Payload-induced flip rate when the detector says ATTACK with a fixed probability", 11.5, INK2)
     s.text(24, 66, "Subset of 576 payload cases per level; 95% event-cluster bootstrap CI", 11.5, INK2)
     legend(s, 86, [(c, name) for _, name, c in MODELS])
@@ -117,8 +120,10 @@ def dose(res, path):
             s.line(x, Y(lo), x, Y(hi), color, 2)
             s.dot(x, Y(v), color)
         d = res["dose"][m]
-        trend = "flat" if d["p"] >= 0.05 else "falls"
-        s.text(X(0.99) + 16, Y(pts[-1][1]) + 4, f"{name}: {trend} (p = {d['p']:.2g})", 11, INK)
+        trend = "no detectable trend" if d["bh_p"] >= 0.05 else "falls"
+        short = name.replace("Claude ", "")
+        s.text(X(0.99) + 16, Y(pts[-1][1]) + 4, f"{short}: {trend}", 11, INK)
+        s.text(X(0.99) + 16, Y(pts[-1][1]) + 19, f"p = {d['p']:.2g}, BH p = {d['bh_p']:.2g}", 10.5, INK2)
     s.save(path)
 
 
@@ -128,18 +133,18 @@ def dwrong(res, path):
                               ("Benign events: answered malicious", "benign_shown_attack_deferred", "benign")]:
         rows.append((title, None))
         for m, name, color in MODELS:
-            ctrl = {r["condition"]: r for r in res["controls"] if r["model"] == m}["B"]
-            rate = {r["condition"]: r for r in res["rates"] if r["model"] == m}["B"]
-            base = (ctrl["benign"], ctrl["malicious"] + ctrl["benign"] + ctrl["invalid"]) if field == "attack" \
-                else (int(rate["benign_fp"]), int(rate["benign_n"]))
-            rows.append((name, (base, tuple(res["dwrong"][m][key][:2]), color)))
-    W, left, right, top, row_h, head_h = 720, 250, 40, 104, 40, 30
+            dw = res["dwrong"][m]
+            base = dw["baseline_B_attack_controls_benign"] if field == "attack" \
+                else dw["baseline_B_benign_controls_malicious"]
+            rows.append((name, (base, dw[key], color)))
+    W, left, right, top, row_h, head_h = 800, 250, 100, 104, 40, 30
     X = lambda v: left + v / 60 * (W - left - right)
     y_end = top + sum(head_h if r is None else row_h for _, r in rows)
     s = Svg(W, y_end + 44)
-    s.text(24, 30, "Following a wrong detector: Haiku only towards benign, Gemma both ways", 15, weight="bold")
+    s.text(24, 30, "A wrong detector was followed towards benign by both models, towards attack only by Gemma",
+           15, weight="bold")
     s.text(24, 50, "Share of no-payload controls answered as the wrong detector suggests "
-                   "(Haiku 48 events × 3 runs, Gemma × 1); 95% Wilson CI", 11.5, INK2)
+                   "(Haiku 48 events × 3 runs, Gemma × 1); 95% event-cluster CI", 11.5, INK2)
     x = 24
     for color, label in [(GRAY, "Correct detector (condition B)"), (YELLOW, "Wrong detector, Haiku"),
                          (BLUE, "Wrong detector, Gemma")]:
@@ -155,20 +160,21 @@ def dwrong(res, path):
             s.text(24, y + 20, label, 12, INK, weight="bold")
             y += head_h
             continue
-        (k0, n0), (k1, n1), color = r
+        e0, e1, color = r
+        (k0, n0), (k1, n1) = e0[:2], e1[:2]
         cy = y + row_h / 2
         s.text(36, cy + 4, label, 12, INK)
         v0, v1 = 100 * k0 / n0, 100 * k1 / n1
         s.line(X(v0), cy, X(v1), cy, GRID, 1)
-        for k, n, v, c in [(k0, n0, v0, GRAY), (k1, n1, v1, color)]:
-            lo, hi = wilson(k, n)
+        for e, v, c in [(e0, v0, GRAY), (e1, v1, color)]:
+            lo, hi = ci_of(e)
             if hi > lo:
                 s.line(X(100 * lo), cy, X(100 * hi), cy, c, 2)
             s.dot(X(v), cy, c)
         if k1 == 0 and k0 == 0:
-            s.text(X(100 * wilson(k1, n1)[1]) + 8, cy + 4, f"0 of {n1} in both", 11, INK)
+            s.text(X(100 * ci_of(e1)[1]) + 8, cy + 4, f"0 of {n1} in both", 11, INK)
         else:
-            s.text(X(100 * wilson(k1, n1)[1]) + 8, cy + 4, f"{v1:.0f}% ({k1}/{n1})", 11, INK)
+            s.text(X(100 * ci_of(e1)[1]) + 8, cy + 4, f"{v1:.0f}% ({k1}/{n1})", 11, INK)
         y += row_h
     s.save(path)
 
