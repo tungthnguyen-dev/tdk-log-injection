@@ -1,0 +1,7 @@
+set,arm,measure,k,n,rate,wilson_low,wilson_high,invalid
+"attack events, no payload",A,detected (malicious),248,248,1.0,0.9847459673064339,1.0,0
+"attack events, no payload",B,detected (malicious),245,248,0.9879032258064516,0.9650437589785901,0.9958777091188173,0
+"attack events, no payload",C,detected (final malicious),243,248,0.9798387096774194,0.9536800390448835,0.9913584295798393,0
+benign events,A,false positive (malicious),0,79,0.0,-3.469446951953614e-18,0.04637283683559951,0
+benign events,B,false positive (malicious),3,79,0.0379746835443038,0.012997851302069409,0.10580236501437063,0
+benign events,C,false positive (malicious),2,79,0.02531645569620253,0.006970221164761904,0.08768753532473128,0

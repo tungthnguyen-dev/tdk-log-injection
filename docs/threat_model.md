@@ -128,3 +128,13 @@ All design points are settled (agreed 8 Oct, before the freeze):
   model. Claude Sonnet 5.5 and Haiku 5.5 (released 7 Oct) were considered but not used:
   both reject any non-default temperature and have adaptive thinking on by default, so
   they could not be run under the same settings.
+
+## Changes after 8 Oct
+
+The decisions above are the record of what was agreed on 8 Oct. Later changes, each logged in the Deviations of `docs/preregistration_v1.md`:
+
+- **Runs per condition.** The Gemma models ran once per case and condition, because 300 repeated calls were byte-identical (pre-registration Section 9, item 1). Claude Haiku 4.5 and the cloud extension models ran three times.
+- **Models.** Eight models in total: the anchors gemma4:e4b and Claude Haiku 4.5; the local ladder gemma4:e2b, gemma4:12b and qwen3.5:9b (subset); and the cloud extension Claude Haiku 5.5, Gemini 2.5 Flash and Gemini 3.6 Flash.
+- **Haiku 5.5.** Listed above as considered but not used; it was used later in the cloud extension, with temperature not sent because the model rejects temperature 0 (16 Oct deviation).
+- **Determinism.** gemma4:e4b's wording can vary across sessions because of Ollama's prompt cache and call order, while its verdicts stay stable (0 of 240 Referer verdicts changed between sessions; 19 Oct deviation).
+- **SR-BH.** An external-validity slice of SR-BH 2020 (248 attack and 79 benign hand-checked events) was run on gemma4:e4b, descriptive only (16 Oct deviation).

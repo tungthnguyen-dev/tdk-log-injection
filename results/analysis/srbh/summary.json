@@ -1,0 +1,14 @@
+{
+  "model": "gemma4:e4b",
+  "runs": 1,
+  "events": {
+    "attack": 248,
+    "benign": 79
+  },
+  "payloads": 12,
+  "bootstrap_resamples": 10000,
+  "notes": [
+    "Descriptive only; agree rows only (selection limits external validity).",
+    "C was run only on the clean attack rows and the benign events, not on injected cases."
+  ]
+}
