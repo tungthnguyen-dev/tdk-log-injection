@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this code or data, please cite it as below."
+title: "When the Detector Becomes the Attack Surface: Explanation-Mediated Prompt Injection against Grounded LLM Log Analysts"
+type: software
+authors:
+  - family-names: Abdullaev
+    given-names: Bakhtier
+    affiliation: "University of Debrecen, Faculty of Informatics"
+  - family-names: Nguyen
+    given-names: The Hoang Tung
+    affiliation: "University of Debrecen, Faculty of Informatics"
+repository-code: "https://github.com/tungthnguyen-dev/tdk-log-injection"
+version: data-freeze-v1
+abstract: >-
+  An LLM log analyst reads a web-server log event and decides whether it is an attack. Attackers control
+  request fields such as the User-Agent, Referer and URI, so they can hide prompt-injection text in the log.
+  We study a hybrid pipeline in which the LLM is also shown the verdict, attack probability and SHAP
+  explanation of a Random Forest detector, so the same attacker-written field reaches the LLM both directly
+  and through the detector evidence (explanation-mediated injection). The repository holds the isolated
+  testbed, the detector, 1,440 injected cases, the pre-registration, every LLM result row from eight models,
+  and the analysis scripts that reproduce all results.
+keywords:
+  - prompt injection
+  - large language models
+  - log analysis
+  - security operations
+  - SHAP
+  - explainable AI
+  - pre-registration
