@@ -308,11 +308,12 @@ def rates(df, pc, benign):
         rows.append(row)
     out = pd.DataFrame(rows)
     if benign is not None and len(benign):
-        fp = (benign.assign(fp=lambda b: np.where(b["condition"] == "C", b["ans_final"], b["ans"]) == "malicious")
-              .groupby(["model", "condition"])["fp"].agg(["sum", "count"]).reset_index())
-        fp["benign_fp_ci"] = [wilson(k, n) for k, n in zip(fp["sum"], fp["count"])]
-        out = out.merge(fp.rename(columns={"sum": "benign_fp", "count": "benign_n"}), on=["model", "condition"],
-                        how="left")
+        b = benign.assign(fp=lambda b: np.where(b["condition"] == "C", b["ans_final"], b["ans"]) == "malicious")
+        fp = (b.groupby(["model", "condition"])
+              .agg(sum=("fp", "sum"), count=("fp", "count"), events=("event_id", "nunique")).reset_index())
+        fp["benign_fp_ci"] = [wilson_events(k, n, e) for k, n, e in zip(fp["sum"], fp["count"], fp["events"])]
+        out = out.merge(fp.rename(columns={"sum": "benign_fp", "count": "benign_n", "events": "benign_events"}),
+                        on=["model", "condition"], how="left")
     return out
 
 
@@ -371,15 +372,22 @@ def dose_trend(pc, model):
     return {"logit_slope_per_unit_p": est, "ci": [float(lo), float(hi)], "p": p, "rate_by_level": rates_}
 
 
+def wilson_events(k, n, n_events):
+    """Wilson CI for the share k/n with the number of events as the sample size: repeated runs of one event
+    are not independent, so they are not counted as separate observations (Deviations 21 Oct)."""
+    return wilson(k / n * n_events, n_events) if n else (float("nan"), float("nan"))
+
+
 def share_with_ci(rows, hit):
-    """Share of rows where `hit` holds: counts with Wilson CI, plus an event-cluster bootstrap CI that treats
-    repeated runs of the same event as one cluster (Deviations 19 Oct). Returns [k, n, wilson, cluster_ci]."""
+    """Share of rows where `hit` holds: counts with a Wilson CI over events, plus an event-cluster bootstrap CI
+    that treats repeated runs of the same event as one cluster (Deviations 19 and 21 Oct).
+    Returns [k, n, wilson, cluster_ci]."""
     x = rows.assign(x=hit.astype(float))
     k, n = int(x["x"].sum()), len(x)
     if n == 0:
         return [0, 0, (float("nan"), float("nan")), [float("nan"), float("nan")]]
     b = mean_test(x, "x")
-    return [k, n, wilson(k, n), [b["ci_low"], b["ci_high"]]]
+    return [k, n, wilson_events(k, n, x["event_id"].nunique()), [b["ci_low"], b["ci_high"]]]
 
 
 def dwrong(df, benign):

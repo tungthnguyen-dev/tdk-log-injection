@@ -119,7 +119,7 @@ All steps after step 3 are offline: they read the committed result files and mak
    ```
 
 The analyses use fixed seeds: re-running `rerun_analyses.sh` on the committed result files reproduces the
-JSON files it writes in `results/analysis/` byte for byte (last checked on 19 Oct 2026).
+JSON files it writes in `results/analysis/` byte for byte (see `docs/freeze_record_v1.md` for the latest check).
 
 | Script | Output |
 |---|---|
@@ -145,9 +145,17 @@ JSON files it writes in `results/analysis/` byte for byte (last checked on 19 Oc
 | claude-haiku-5-5 | Anthropic API | thinking disabled; temperature not sent (the model rejects non-default values) | 3 |
 | gemini-3.6-flash | Gemini API | thinking level MINIMAL; temperature not sent | 3 |
 
-Every row stores the parameters actually sent; cloud rows also store the model version the API reports.
-The local models give stable verdicts across runs, but their wording can vary with Ollama's prompt cache
-(see the 19 Oct entry under Deviations).
+The 8 result files from 8-9 Oct (Claude Haiku 4.5 v1 and gemma4 e2b/e4b/12b A/B/C, each with its
+benign-control file) were written by the earlier runner and store the prompt version and hash only; their
+settings are the ones in the table above (pre-registration Section 8). All later rows also store the runner
+commit, backend version, model digest and the parameters actually sent; the cloud-extension rows also store
+the model version the API reports. The local models give stable verdicts across runs, but their wording can
+vary with Ollama's prompt cache (see the 19 Oct entry under Deviations).
+
+The detector files in `data/processed/` were produced with the versions in `requirements.txt` (shap 0.52.0,
+scikit-learn 1.9.1). The freeze validation re-ran the analyses and the sanitised re-scoring on a second machine
+with shap 0.54.1, and no tracked file changed; it did not retrain the detector. `docs/freeze_record_v1.md`
+lists both environments.
 
 ## Docs
 

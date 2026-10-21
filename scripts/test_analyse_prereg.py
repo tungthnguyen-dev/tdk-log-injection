@@ -135,12 +135,17 @@ def test_small_helpers():
     assert abs(q["q"] - 13.0) < 1e-12 and q["df"] == 2 and abs(q["p"] - np.exp(-6.5)) < 1e-12, q
     q2 = ap.cochran_q([[1, 0]] * 5 + [[0, 1]] + [[0, 0]] * 4)                    # k = 2: McNemar chi-square
     assert abs(q2["q"] - (5 - 1) ** 2 / 6) < 1e-12, q2
+    rows = pd.DataFrame({"event_id": [f"e{i}" for i in range(48)] * 3})          # 48 events x 3 runs
+    zero = ap.share_with_ci(rows, pd.Series([False] * 144))
+    assert zero[:2] == [0, 144] and abs(zero[2][1] - ap.wilson(0, 48)[1]) < 1e-12, zero   # n = 48 events, not 144
+    some = ap.share_with_ci(rows, pd.Series([True] * 60 + [False] * 84))
+    assert np.allclose(some[2], ap.wilson(20, 48)), some                          # 60/144 = 20/48 events' worth
     d = pd.DataFrame({"event_id": ["a"] * 3 + ["b"] * 3, "x": [1, 1, 1, 0, 0, 0]})
     assert abs(ap.icc_oneway(d, "x")["icc"] - 1.0) < 1e-12
     allzero = ap.boot({"num": np.zeros(5), "den": np.ones(5)}, lambda s: s["num"] / s["den"], B=200)
     assert allzero["p"] == 1.0, "p must be capped at 1"
     print("ok  Holm, Benjamini-Hochberg, McNemar mid-p (5 vs 1 -> 0.125), Cochran's Q (hand-worked 13; "
-          "k = 2 equals McNemar), ICC, p capped at 1")
+          "k = 2 equals McNemar), Wilson over events (0 of 48 x 3 -> n = 48), ICC, p capped at 1")
 
 
 def test_null_false_positive_rate(n_sims=400, B=2000):
