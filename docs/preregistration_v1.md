@@ -367,3 +367,10 @@ The runner registry must map condition VS to template VS (it named it VPS before
   outside Holm and Benjamini-Hochberg, and decides nothing. Added after all results had been seen; no LLM
   calls and no data change.
 - 21 Oct 2026: payload texts made public. Section 8 says full payload texts go only in the reviewer supplement. With the repository made public under CC BY 4.0 (after data-freeze-v1), the full texts are public in payloads/payloads.csv and in the injected_raw_log and raw_response columns of the case and result files. Reasons: the payloads are fixed text strings aimed at an LLM log analyser in our own isolated testbed, not exploits against real systems, and publishing them lets others verify and reproduce the results. The paper still describes the payloads by family. Decided by both authors after the freeze; no data or analysis changed.
+- 21 Oct 2026: Wilson intervals now use the number of events as the sample size. For benign false positives
+  and for DWRONG and its condition-B baselines, the share is still counted over all calls, but repeated runs
+  of one event are no longer treated as independent observations: Claude Haiku 4.5's and the extension
+  models' 3 runs of 48 events had entered as 144, which made the intervals too narrow (for 0 of 144 the
+  upper bound was 2.6%; with 48 events it is 7.4%). Point estimates, the event-cluster bootstrap intervals
+  and every confirmatory and exploratory test are unchanged. Made after all results had been seen,
+  following an independent review; no LLM calls and no data change.

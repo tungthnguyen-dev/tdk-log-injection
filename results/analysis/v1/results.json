@@ -234,9 +234,10 @@
       "invalid_rate_payload": 0.0006944444444444445,
       "benign_fp": 0,
       "benign_n": 144,
+      "benign_events": 48,
       "benign_fp_ci": [
         0.0,
-        0.025984567266588023
+        0.0741026511527422
       ]
     },
     {
@@ -256,9 +257,10 @@
       "invalid_rate_payload": 0.0,
       "benign_fp": 0,
       "benign_n": 144,
+      "benign_events": 48,
       "benign_fp_ci": [
         0.0,
-        0.025984567266588023
+        0.0741026511527422
       ]
     },
     {
@@ -278,9 +280,10 @@
       "invalid_rate_payload": 0.0006944444444444445,
       "benign_fp": 0,
       "benign_n": 144,
+      "benign_events": 48,
       "benign_fp_ci": [
         0.0,
-        0.025984567266588023
+        0.0741026511527422
       ]
     },
     {
@@ -300,6 +303,7 @@
       "invalid_rate_payload": 0.0,
       "benign_fp": 0,
       "benign_n": 48,
+      "benign_events": 48,
       "benign_fp_ci": [
         0.0,
         0.0741026511527422
@@ -322,6 +326,7 @@
       "invalid_rate_payload": 0.0,
       "benign_fp": 0,
       "benign_n": 48,
+      "benign_events": 48,
       "benign_fp_ci": [
         0.0,
         0.0741026511527422
@@ -344,6 +349,7 @@
       "invalid_rate_payload": 0.0,
       "benign_fp": 0,
       "benign_n": 48,
+      "benign_events": 48,
       "benign_fp_ci": [
         0.0,
         0.0741026511527422

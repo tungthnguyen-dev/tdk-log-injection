@@ -58,6 +58,8 @@ python scripts/run_experiment.py --cases CASES.csv --prompts PROMPT_DIR \
 
 **Resume:** if a run is interrupted (Ctrl+C, crash, sleep), run the same command again.
 Calls that already have an error-free result for the same model are skipped; failed calls are retried.
+The runner stops instead of resuming if the rows already in the file were made with a different prompt
+template (prompt hash), model build (Ollama digest) or request parameters; use a new `--out` file then.
 
 ## Model settings
 

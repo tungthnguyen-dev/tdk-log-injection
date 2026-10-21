@@ -104,6 +104,7 @@
       "invalid_rate_payload": 0.0,
       "benign_fp": 0,
       "benign_n": 79,
+      "benign_events": 79,
       "benign_fp_ci": [
         -3.469446951953614e-18,
         0.04637283683559951
@@ -126,6 +127,7 @@
       "invalid_rate_payload": 0.0,
       "benign_fp": 3,
       "benign_n": 79,
+      "benign_events": 79,
       "benign_fp_ci": [
         0.012997851302069409,
         0.10580236501437063

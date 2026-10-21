@@ -128,6 +128,28 @@ def backend_info(backend, model):
     return f"ollama {version}", digest
 
 
+def resume_conflict(prev, conditions, prompt_hashes, model_digest):
+    """Rows already in the output file count as done only if they come from the same setup: the same prompt
+    template for every condition and the same model build. Returns the first mismatch found, or None."""
+    for cond in conditions:
+        old = set(prev.loc[prev["condition"] == cond, "prompt_hash"]) - {prompt_hashes[cond]}
+        if old:
+            return (f"rows for condition {cond} were made with prompt hash {', '.join(sorted(old))}, "
+                    f"this run uses {prompt_hashes[cond]}")
+    if model_digest not in ("", "unknown") and "model_digest" in prev:
+        old = set(prev["model_digest"]) - {"", "unknown", model_digest}
+        if old:
+            return f"rows were made with model {', '.join(sorted(old))}, this run uses {model_digest}"
+    return None
+
+
+def params_conflict(prev_params, params_sent):
+    """The request parameters of this run must match those of the rows already in the file."""
+    if prev_params and params_sent not in prev_params:
+        return f"rows were made with parameters {', '.join(sorted(prev_params))}, this run sends {params_sent}"
+    return None
+
+
 # ---------- prompts ----------
 
 def load_templates(prompt_dir, conditions):
@@ -448,8 +470,10 @@ def main():
     done = 0
     tokens_in = tokens_out = 0
 
-    # Resume: skip (case, condition, run) that already have an error-free result for this model
+    # Resume: skip (case, condition, run) that already have an error-free result for this model, but only
+    # if those rows come from the same prompts, model build and request parameters as this run
     done_keys = set()
+    prev_params = set()
     fieldnames = RESULT_FIELDS
     if not new_file:
         with open(args.out) as fh:
@@ -461,6 +485,10 @@ def main():
         prev = pd.read_csv(args.out, keep_default_na=False)
         prev = prev[(prev["model"] == args.model) & (prev["error"] == "")
                     & (prev["prompt_version"] == prompt_version)]
+        problem = resume_conflict(prev, conditions, prompt_hashes, model_digest)
+        if problem:
+            sys.exit(f"{args.out}: {problem}. They would be counted as done; use a new --out file.")
+        prev_params = set(prev["params_sent"]) - {""}
         done_keys = set(zip(prev["case_id"], prev["condition"], prev["run"].astype(int)))
         print(f"Resuming: {len(done_keys)} of {total} calls already done "
               f"for {args.model} with prompts {prompt_version}")
@@ -488,6 +516,9 @@ def main():
 
                         resp = call_model(args.backend, client, args.model, system_t, user,
                                           send_temperature, args.thinking)
+                        problem = params_conflict(prev_params, resp["params_sent"])
+                        if problem:     # stop before writing a row from a different setup
+                            sys.exit(f"{args.out}: {problem}. Use a new --out file.")
                         valid, verdict, severity, explanation = parse_answer(resp["text"])
                         tokens_in += resp["prompt_tokens"]
                         tokens_out += resp["output_tokens"]

@@ -143,12 +143,13 @@ def dose_figure(res, path):
 
 
 def ci_of(entry):
-    """[k, n, wilson, event-cluster CI] -> the event-cluster CI; for 0 of n (degenerate bootstrap), Wilson."""
+    """[k, n, wilson, event-cluster CI] -> the event-cluster CI; for 0 of n (degenerate bootstrap), the Wilson CI
+    over events (analyse_prereg.wilson_events)."""
     k, _, w, c = entry
     return tuple(w) if k == 0 else tuple(c)
 
 
-ZERO_NOTE = "For 0 of n the event-cluster bootstrap has no spread, so the Wilson 95% CI is shown instead."
+ZERO_NOTE = "For 0 counts the event-cluster bootstrap has no spread, so the Wilson 95% CI over the 48 events is shown."
 
 
 def dwrong_figure(res, path):
