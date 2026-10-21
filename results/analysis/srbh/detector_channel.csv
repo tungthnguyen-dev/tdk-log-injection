@@ -2,5 +2,5 @@ target_field,cases,detector_says_benign
 referer,744,24
 uri,248,6
 user_agent,1984,88
-compound bypass in A (detector benign AND LLM benign),2976,69
-compound bypass in B (detector benign AND LLM benign),2976,75
+joint miss in A (detector benign AND LLM benign),2976,69
+joint miss in B (detector benign AND LLM benign),2976,75

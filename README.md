@@ -129,10 +129,10 @@ JSON files it writes in `results/analysis/` byte for byte (last checked on 19 Oc
 | `analyse_same_session.py` | same-session H2 check: `results/analysis/sensitivity/` |
 | `analyse_ladder.py` | model ladder and capability gradient: `results/analysis/ladder/results.json` |
 | `analyse_extension.py` | cloud-model extension: `results/analysis/extension/results.json` |
+| `analyze_srbh.py` | SR-BH external-validity summary, descriptive only: `results/analysis/srbh/results.json` |
 | `make_figures_haiku.py`, `make_figures_combined.py` | paper figures (SVG + PNG): `results/figures/` |
 | `rescore_sanitised.py` | detector re-scored after C's input cleaning: `data/processed/detector_sanitised_v1.csv` |
 | `analyze_condition_c.py` | condition-C decomposition, floor replay, verdict-guard trade-off: `results/analysis/defences/` |
-| `analyze_srbh.py` | SR-BH external-validity summary, descriptive only: `results/analysis/srbh/results.json` |
 | `check_v2_runs.py`, `detector_shift.py`, `latency_tokens.py` | validity checks and summaries (no outcomes read) |
 
 ## Model settings

@@ -217,12 +217,12 @@
       "detector_says_benign": 88
     },
     {
-      "target_field": "compound bypass in A (detector benign AND LLM benign)",
+      "target_field": "joint miss in A (detector benign AND LLM benign)",
       "cases": 2976,
       "detector_says_benign": 69
     },
     {
-      "target_field": "compound bypass in B (detector benign AND LLM benign)",
+      "target_field": "joint miss in B (detector benign AND LLM benign)",
       "cases": 2976,
       "detector_says_benign": 75
     }
