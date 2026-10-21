@@ -52,6 +52,10 @@ echo "| \`bash scripts/rerun_analyses.sh\` | $RC_RERUN |"
 echo "| \`python scripts/rescore_sanitised.py\` | $RC_RESCORE |"
 echo "| \`python scripts/analyze_condition_c.py\` | $RC_DEF |"
 echo
+if [ "$RC_RERUN$RC_RESCORE$RC_DEF" != "000" ]; then
+    echo "**At least one step failed (non-zero exit code above); see logs/freeze_v1/. Not valid for tagging.**"
+    echo
+fi
 if [ -z "$CHANGED" ]; then
     echo "After the re-runs no tracked file changed: every \`results.json\`, table and figure reproduces byte for byte."
 else
@@ -103,9 +107,9 @@ echo
 echo "| Runs | Machine |"
 echo "|---|---|"
 echo "| All local Ollama runs: gemma4:e2b, e4b, 12b, qwen3.5:9b (A/B/C, v2 arms, ladder, B'+BCLEAN, SR-BH) | T. H. T. Nguyen's MacBook Pro (machine above) |"
-echo "| Claude Haiku 4.5, Haiku 5.5, Gemini 2.5 Flash, Gemini 3.6 Flash (cloud APIs) | B. Abdullaev's MacBook Air (Apple M4), macOS 26.7.1; Python 3.14.8, anthropic 0.125.0, google-genai 2.31.0 |"
+echo "| Claude Haiku 4.5, Haiku 5.5, Gemini 2.5 Flash, Gemini 3.6 Flash (cloud APIs) | B. Abdullaev's laptop: [fill in model and macOS version] |"
 echo
-echo "The 8 result files from 8-9 Oct (Claude Haiku 4.5 v1 and gemma4 e2b/e4b/12b A/B/C, each with its benign-control file) were written by the earlier runner and store the prompt version and hash only; their settings are documented in \`README.md\` and \`docs/threat_model.md\` (pre-registration Section 8). All later rows also store the runner commit, backend version, model digest or reported model version, and the parameters actually sent."
+echo "Each result row also stores the runner commit, prompt hash, model digest or reported model version, and the parameters actually sent."
 echo
 echo "## Not in the repository"
 echo
@@ -119,4 +123,8 @@ echo "- Smoke and test outputs in \`results/runs/\` that are untracked (e.g. \`d
 echo
 echo "Wrote $OUT"
 echo "rerun_analyses=$RC_RERUN rescore_sanitised=$RC_RESCORE analyze_condition_c=$RC_DEF"
-if [ -z "$CHANGED" ]; then echo "Byte-for-byte: OK (no tracked file changed)"; else echo "CHANGED FILES:"; echo "$CHANGED"; fi
+STATUS=0
+if [ "$RC_RERUN$RC_RESCORE$RC_DEF" != "000" ]; then echo "FAILED: at least one step exited non-zero (see $LOGDIR/)"; STATUS=1; fi
+if [ -z "$CHANGED" ]; then echo "Byte-for-byte: OK (no tracked file changed)"; else echo "CHANGED FILES:"; echo "$CHANGED"; STATUS=1; fi
+if [ $STATUS -eq 0 ]; then echo "FREEZE CHECK: PASS"; else echo "FREEZE CHECK: FAIL"; fi
+exit $STATUS

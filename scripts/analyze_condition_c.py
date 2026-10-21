@@ -33,7 +33,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from analyse_prereg import CASES, FILES, RANK, load_runs, mean_test, outcomes, per_case, wilson
+from analyse_prereg import CASES, FILES, RANK, load_runs, mean_test, outcomes, per_case, wilson_events
 
 OUT = "results/analysis/defences"
 SANITISED = "data/processed/detector_sanitised_v1.csv"
@@ -159,7 +159,7 @@ def verdict_side(df, benign, san):
         b = benign[(benign["model"] == model) & (benign["condition"] == "C")]
         k1, n1 = int((c["ans_final"] == "benign").sum()), len(c)
         k2, n2 = int((b["ans_final"] == "malicious").sum()), len(b)
-        out[label] = {"C_payload_rows_final_benign": [k1, n1], "C_benign_rows_final_malicious": [k2, n2, wilson(k2, n2)]}
+        out[label] = {"C_payload_rows_final_benign": [k1, n1], "C_benign_rows_final_malicious": [k2, n2, wilson_events(k2, n2, b["event_id"].nunique())]}   # Wilson over events, not rows
     bc = san[san["is_benign_control"].astype(str) == "True"]
     out["detector_on_benign_controls"] = {"raw_attack": int((bc["raw_proba"] >= 0.5).sum()),
                                           "cleaned_attack": int((bc["clean_proba"] >= 0.5).sum()), "n": len(bc)}
