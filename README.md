@@ -171,3 +171,9 @@ All attack traffic and payloads were run only inside our own isolated testbed; n
 targeted and no real user data was used. The SR-BH 2020 slice is a public dataset (CC0) used for a
 descriptive external-validity check only. The paper describes payloads by family; their full texts are in
 `payloads/payloads.csv`.
+
+## License
+
+- Code (`scripts/`, `testbed/`): MIT, see [LICENSE](LICENSE).
+- Data, results, figures, prompts, payloads and documentation: CC BY 4.0, see [LICENSE-DATA](LICENSE-DATA).
+- `data/processed/srbh/` is derived from SR-BH 2020 (doi:10.7910/DVN/OGOIXX), released under CC0.
