@@ -9,7 +9,7 @@ Parts
      the 79 agree benign events (A, B, C); Wilson CIs. C uses final_verdict.
   2. Injection (12 subset payloads x 248 attack events = 2,976 cases): payload-induced flip and raw flip in A and B,
      B - A with event-cluster CI, split by payload field and by attack type.
-  3. Detector channel: the retrained detector's own verdict on the injected cases, and "compound bypass"
+  3. Detector channel: the retrained detector's own verdict on the injected cases, and "joint miss"
      (the detector says benign AND the LLM says benign) per arm.
   4. Invalid-answer rates per arm.
 
@@ -107,7 +107,7 @@ def main():
     for cond, g in p.groupby("condition"):
         dvg = dv.loc[g.index]
         k = int(((dvg == "benign") & (g["ans"] == "benign")).sum())
-        det.append({"target_field": f"compound bypass in {cond} (detector benign AND LLM benign)", "cases": len(g),
+        det.append({"target_field": f"joint miss in {cond} (detector benign AND LLM benign)", "cases": len(g),
                     "detector_says_benign": k})
     detector = pd.DataFrame(det)
 
