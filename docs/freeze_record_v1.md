@@ -1,10 +1,10 @@
 # Freeze record v1
 
-Record behind the git tag `data-freeze-v1`. Generated 2026-10-21 22:53 CEST by `scripts/make_freeze_record.sh`.
+Record behind the git tag `data-freeze-v1`. Generated 2026-10-21 23:51 CEST by `scripts/make_freeze_record.sh`.
 
 ## Frozen commit
 
-- Commit: `b505d1129c228837be991124b09a6bcf1956376c` (branch `docs/freeze-record`)
+- Commit: `d184091050d48cb8c4cd4bc82392a49311bb7d7a` (branch `fix/review-tung`)
 - The tag points to the commit that adds this file, which is this commit plus the record itself.
 
 ## Validation
@@ -65,11 +65,11 @@ fd13688ea8eabadf1f311c809270339139359762881cf9b6cc9e59e4d292f2dc  prompts/v2/con
 d2c6571b14b7a92e3dcd4888af7e9bc17b2e2a8b546e144ecd6885097acadff5  prompts/v2/condition_VS_user.txt
 859c9a54ff0866c52834a404a0edb575ea0218c89da841c20759ccc857c54b13  prompts/v2/condition_V_system.txt
 df33e5e6a335688ce71d872f65713c7990864f9b671017900db8123291e4684d  prompts/v2/condition_V_user.txt
-3c44c3bbfebaa2cc395ff2194f5ebfd9a8183b9e2c10a92bfa720e7288549080  results/analysis/all/results.json
-ffba9a02e650ff6c7e4eb1a49707d190d34232699cca6186d3d7f4cc842cbef7  results/analysis/extension/results.json
+38b9d8d772fd64d073e00224bda5ffcf35e5e034a8211998b2836ab9b025bfb9  results/analysis/all/results.json
+0a446f5340070253002f96629516b8fa9b55d6dbb8b52aada3cf0286b01b5732  results/analysis/extension/results.json
 16bfeab257dac49894abf5b487b5c7f76077e4b17688fe7858991638bf27bfb3  results/analysis/ladder/results.json
-7d21c5875534f8bc0177cdb9c96aa06c4b5c0cb8cdca89235f9fa32b9fab2cee  results/analysis/srbh/results.json
-7fc526aed3713d2add415263036401bee3b8e2418adef0f7f40213dee96188e0  results/analysis/v1/results.json
+d717e02a5987c774baa6e69741ce28fe1fb38029f6d01ff6761eaad68c297fa8  results/analysis/srbh/results.json
+3604b5ffe8156ab7e514b52c344c8b5b0162e26d0d71eefac33442d031a0741e  results/analysis/v1/results.json
 b9481131cc2f9d3936e425c279bcefbfcd1db45b93aad1dd1f8cafaa8dc253cf  results/runs/claude_haiku_4_5_benign_v1.csv
 a2db07411774d3dd1c475a4220fa8259a5f1556ef62769e76aa505d69224dc65  results/runs/claude_haiku_4_5_v1.csv
 16a1682ffef08e0894934723ff7d02946b9388d5987f3db3ee3a245bb7b85b7e  results/runs/claude_haiku_4_5_v2_bclean.csv
@@ -225,9 +225,9 @@ wrapt==2.5.2rc1
 | Runs | Machine |
 |---|---|
 | All local Ollama runs: gemma4:e2b, e4b, 12b, qwen3.5:9b (A/B/C, v2 arms, ladder, B'+BCLEAN, SR-BH) | T. H. T. Nguyen's MacBook Pro (machine above) |
-| Claude Haiku 4.5, Haiku 5.5, Gemini 2.5 Flash, Gemini 3.6 Flash (cloud APIs) | B. Abdullaev's MacBook Air (Apple M4), macOS 26.7.1; Python 3.14.8, anthropic 0.125.0, google-genai 2.31.0 |
+| Claude Haiku 4.5, Haiku 5.5, Gemini 2.5 Flash, Gemini 3.6 Flash (cloud APIs) | B. Abdullaev's laptop: [fill in model and macOS version] |
 
-The 8 result files from 8-9 Oct (Claude Haiku 4.5 v1 and gemma4 e2b/e4b/12b A/B/C, each with its benign-control file) were written by the earlier runner and store the prompt version and hash only; their settings are documented in `README.md` and `docs/threat_model.md` (pre-registration Section 8). All later rows also store the runner commit, backend version, model digest or reported model version, and the parameters actually sent.
+Each result row also stores the runner commit, prompt hash, model digest or reported model version, and the parameters actually sent.
 
 ## Not in the repository
 
@@ -236,3 +236,7 @@ The 8 result files from 8-9 Oct (Claude Haiku 4.5 v1 and gemma4 e2b/e4b/12b A/B/
 - `data/external/`: the SR-BH 2020 source file (doi:10.7910/DVN/OGOIXX); the converted slice is in `data/processed/srbh/`.
 - `logs/` and local notes: run logs and personal notes, not needed to reproduce the results.
 - Smoke and test outputs in `results/runs/` that are untracked (e.g. `dummy_test.csv`, `resume_test.csv`).
+
+## Earlier archive
+
+`data-freeze-v1` (commit 53b584f, Zenodo DOI 10.5281/zenodo.23547265) was released on 21 Oct 2026 before the review fixes and the licences. It is superseded by `data-freeze-v1.1`, which this record describes. The paper cites v1.1.
