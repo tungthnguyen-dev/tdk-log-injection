@@ -242,7 +242,8 @@ def figure(sweep, cost):
     axes[0].legend(frameon=False, fontsize=9)
     fig.tight_layout()
     for ext in ["png", "pdf"]:
-        fig.savefig(f"{OUT}/fig_guard_tradeoff.{ext}", dpi=200)
+        fig.savefig(f"{OUT}/fig_guard_tradeoff.{ext}", dpi=200,
+                    metadata={"CreationDate": None} if ext == "pdf" else None)   # PDF without a timestamp: byte-identical re-runs
     plt.close(fig)
 
 
