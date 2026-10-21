@@ -1,0 +1,12 @@
+   Data, run outputs, results, figures, prompts, payloads and documentation in this repository
+   (data/, results/, docs/, prompts/, payloads/) are licensed under the
+   Creative Commons Attribution 4.0 International License (CC BY 4.0).
+
+   Copyright (c) 2026 Bakhtier Abdullaev and The Hoang Tung Nguyen
+
+   You may share and adapt this material for any purpose, provided you give appropriate credit,
+   link to the license and indicate if changes were made.
+   Full legal text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+   Third-party data: the files in data/processed/srbh/ are derived from SR-BH 2020
+   (Harvard Dataverse, doi:10.7910/DVN/OGOIXX), released under CC0 1.0.
