@@ -1,0 +1,293 @@
+{
+  "description": "SR-BH 2020 slice, gemma4:e4b, descriptive only (16 Oct deviation)",
+  "files": [
+    "results/runs/gemma4_e4b_srbh.csv",
+    "results/runs/gemma4_e4b_srbh_clean_c.csv",
+    "results/runs/gemma4_e4b_srbh_benign.csv"
+  ],
+  "B_minus_A": {
+    "name": "SRBH B-A",
+    "model": "gemma4:e4b",
+    "contrast": "B - A",
+    "n_cases": 2976,
+    "primary": {
+      "estimate": -0.18111559139784947,
+      "ci_low": -0.19154065860215053,
+      "ci_high": -0.17170698924731181,
+      "p": 0.0001,
+      "n_events": 248
+    },
+    "worst_case": {
+      "estimate": -0.18111559139784947,
+      "ci_low": -0.19154065860215053,
+      "ci_high": -0.17170698924731181,
+      "p": 0.0001,
+      "n_events": 248
+    },
+    "complete_case": {
+      "estimate": -0.18111559139784947,
+      "ci_low": -0.19154065860215053,
+      "ci_high": -0.17170698924731181,
+      "p": 0.0001,
+      "n_events": 248
+    },
+    "raw_flip": {
+      "estimate": -0.17036290322580644,
+      "ci_low": -0.1797715053763441,
+      "ci_high": -0.16061827956989247,
+      "p": 0.0001,
+      "n_events": 248
+    },
+    "control_gated": {
+      "estimate": -0.17517006802721088,
+      "ci_low": -0.18299319727891156,
+      "ci_high": -0.1673469387755102,
+      "p": 0.0001,
+      "n_events": 245
+    },
+    "control_gated_raw_flip": {
+      "estimate": -0.17517006802721088,
+      "ci_low": -0.18299319727891156,
+      "ci_high": -0.1673469387755102,
+      "p": 0.0001,
+      "n_events": 245
+    },
+    "control_gated_events": 245,
+    "icc": {
+      "icc": -0.043074125021649326,
+      "n_eff": 2976.0
+    },
+    "mcnemar": {
+      "discordant_1_not_0": 4,
+      "discordant_0_not_1": 543,
+      "mcnemar_midp": 8.127022300077002e-156
+    }
+  },
+  "B_minus_A_by_field": {
+    "referer": {
+      "estimate": -0.004032258064516129,
+      "ci_low": -0.009408602150537635,
+      "ci_high": 0.0,
+      "p": 0.0956,
+      "n_events": 248
+    },
+    "uri": {
+      "estimate": -0.004032258064516129,
+      "ci_low": -0.012096774193548387,
+      "ci_high": 0.0,
+      "p": 0.7192,
+      "n_events": 248
+    },
+    "user_agent": {
+      "estimate": -0.2696572580645161,
+      "ci_low": -0.2852822580645161,
+      "ci_high": -0.2555443548387097,
+      "p": 0.0001,
+      "n_events": 248
+    }
+  },
+  "rates_A_B": [
+    {
+      "model": "gemma4:e4b",
+      "condition": "A",
+      "payload_cases": 2976,
+      "payload_induced_flip": 0.27956989247311825,
+      "payload_induced_flip_ci": [
+        0.2691532258064516,
+        0.290994623655914
+      ],
+      "raw_flip": 0.27956989247311825,
+      "raw_flip_ci": [
+        0.2691532258064516,
+        0.290994623655914
+      ],
+      "invalid_rate_payload": 0.0,
+      "benign_fp": 0,
+      "benign_n": 79,
+      "benign_fp_ci": [
+        -3.469446951953614e-18,
+        0.04637283683559951
+      ]
+    },
+    {
+      "model": "gemma4:e4b",
+      "condition": "B",
+      "payload_cases": 2976,
+      "payload_induced_flip": 0.09845430107526881,
+      "payload_induced_flip_ci": [
+        0.08904569892473119,
+        0.10987903225806452
+      ],
+      "raw_flip": 0.10920698924731183,
+      "raw_flip_ci": [
+        0.09543010752688172,
+        0.12533602150537634
+      ],
+      "invalid_rate_payload": 0.0,
+      "benign_fp": 3,
+      "benign_n": 79,
+      "benign_fp_ci": [
+        0.012997851302069409,
+        0.10580236501437063
+      ]
+    }
+  ],
+  "clean_behaviour": [
+    {
+      "set": "attack events, no payload",
+      "arm": "A",
+      "measure": "detected (malicious)",
+      "k": 248,
+      "n": 248,
+      "rate": 1.0,
+      "wilson_low": 0.9847459673064339,
+      "wilson_high": 1.0,
+      "invalid": 0
+    },
+    {
+      "set": "attack events, no payload",
+      "arm": "B",
+      "measure": "detected (malicious)",
+      "k": 245,
+      "n": 248,
+      "rate": 0.9879032258064516,
+      "wilson_low": 0.9650437589785901,
+      "wilson_high": 0.9958777091188173,
+      "invalid": 0
+    },
+    {
+      "set": "attack events, no payload",
+      "arm": "C",
+      "measure": "detected (final malicious)",
+      "k": 243,
+      "n": 248,
+      "rate": 0.9798387096774194,
+      "wilson_low": 0.9536800390448835,
+      "wilson_high": 0.9913584295798393,
+      "invalid": 0
+    },
+    {
+      "set": "benign events",
+      "arm": "A",
+      "measure": "false positive (malicious)",
+      "k": 0,
+      "n": 79,
+      "rate": 0.0,
+      "wilson_low": -3.469446951953614e-18,
+      "wilson_high": 0.04637283683559951,
+      "invalid": 0
+    },
+    {
+      "set": "benign events",
+      "arm": "B",
+      "measure": "false positive (malicious)",
+      "k": 3,
+      "n": 79,
+      "rate": 0.0379746835443038,
+      "wilson_low": 0.012997851302069409,
+      "wilson_high": 0.10580236501437063,
+      "invalid": 0
+    },
+    {
+      "set": "benign events",
+      "arm": "C",
+      "measure": "false positive (malicious)",
+      "k": 2,
+      "n": 79,
+      "rate": 0.02531645569620253,
+      "wilson_low": 0.006970221164761904,
+      "wilson_high": 0.08768753532473128,
+      "invalid": 0
+    }
+  ],
+  "detector_channel": [
+    {
+      "target_field": "referer",
+      "cases": 744,
+      "detector_says_benign": 24
+    },
+    {
+      "target_field": "uri",
+      "cases": 248,
+      "detector_says_benign": 6
+    },
+    {
+      "target_field": "user_agent",
+      "cases": 1984,
+      "detector_says_benign": 88
+    },
+    {
+      "target_field": "compound bypass in A (detector benign AND LLM benign)",
+      "cases": 2976,
+      "detector_says_benign": 69
+    },
+    {
+      "target_field": "compound bypass in B (detector benign AND LLM benign)",
+      "cases": 2976,
+      "detector_says_benign": 75
+    }
+  ],
+  "invalid": [
+    {
+      "file": "attack",
+      "arm": "A",
+      "k": 0,
+      "n": 3224,
+      "rate": 0.0,
+      "wilson_low": -1.0842021724855044e-19,
+      "wilson_high": 0.0011901451421903724
+    },
+    {
+      "file": "attack",
+      "arm": "B",
+      "k": 0,
+      "n": 3224,
+      "rate": 0.0,
+      "wilson_low": -1.0842021724855044e-19,
+      "wilson_high": 0.0011901451421903724
+    },
+    {
+      "file": "clean_C",
+      "arm": "C",
+      "k": 0,
+      "n": 248,
+      "rate": 0.0,
+      "wilson_low": -1.734723475976807e-18,
+      "wilson_high": 0.015254032693566115
+    },
+    {
+      "file": "benign",
+      "arm": "A",
+      "k": 0,
+      "n": 79,
+      "rate": 0.0,
+      "wilson_low": -3.469446951953614e-18,
+      "wilson_high": 0.04637283683559951
+    },
+    {
+      "file": "benign",
+      "arm": "B",
+      "k": 0,
+      "n": 79,
+      "rate": 0.0,
+      "wilson_low": -3.469446951953614e-18,
+      "wilson_high": 0.04637283683559951
+    },
+    {
+      "file": "benign",
+      "arm": "C",
+      "k": 0,
+      "n": 79,
+      "rate": 0.0,
+      "wilson_low": -3.469446951953614e-18,
+      "wilson_high": 0.04637283683559951
+    }
+  ],
+  "detector_side": "results/summary/srbh_detector_shift_v1.csv",
+  "caveats": [
+    "Agree rows only: 248 attack + 79 benign of 500 (selection limits external validity).",
+    "Labels hand-checked by one author (14 Oct deviation).",
+    "Detector retrained on SR-BH (grouped CV by hour).",
+    "C was run only on clean attack rows and benign events, not on injected cases."
+  ]
+}

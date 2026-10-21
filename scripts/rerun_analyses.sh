@@ -24,6 +24,7 @@ step "same-session H2 (e4b)";   $PY scripts/analyse_same_session.py --file resul
                                     --out results/analysis/sensitivity/e4b_bprime.json > /dev/null
 step "model ladder";            $PY scripts/analyse_ladder.py > /dev/null
 step "cloud extension";         $PY scripts/analyse_extension.py > /dev/null
+step "SR-BH summary";           $PY scripts/analyze_srbh.py > /dev/null
 step "figures";                 $PY scripts/make_figures_haiku.py > /dev/null
                                 $PY scripts/make_figures_combined.py > /dev/null
 echo; echo "Done. Review with: git status"
