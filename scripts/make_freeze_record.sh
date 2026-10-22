@@ -1,8 +1,8 @@
 #!/bin/bash
-# Build docs/freeze_record_v1.md: the record behind the data-freeze-v1 tag.
+# Build docs/freeze_record_v1.md: the record behind the data-freeze tag named in $TAG (default data-freeze-v1.2).
 # Run from the repo root on an up-to-date main, with every PR merged and a clean working tree.
 #
-#   RUNNER_VENV=.venv ANALYSIS_VENV=~/venvs/tdk-detector bash scripts/make_freeze_record.sh
+#   RUNNER_VENV=.venv ANALYSIS_VENV=~/venvs/tdk-detector TAG=data-freeze-v1.2 bash scripts/make_freeze_record.sh
 #
 # It re-runs the analyses and checks that no tracked file changes (byte-for-byte reproduction).
 # Nothing is committed or tagged by this script.
@@ -11,6 +11,7 @@ set -u
 cd "$(dirname "$0")/.." || exit 1
 RUNNER_VENV="${RUNNER_VENV:-.venv}"
 ANALYSIS_VENV="${ANALYSIS_VENV:-$HOME/venvs/tdk-detector}"
+TAG="${TAG:-data-freeze-v1.2}"
 OUT=docs/freeze_record_v1.md
 LOGDIR=logs/freeze_v1
 mkdir -p "$LOGDIR" docs
@@ -37,7 +38,7 @@ CHANGED=$(git status --porcelain --untracked-files=no)
 {
 echo "# Freeze record v1"
 echo
-echo "Record behind the git tag \`data-freeze-v1\`. Generated $(date '+%Y-%m-%d %H:%M %Z') by \`scripts/make_freeze_record.sh\`."
+echo "Record behind the git tag \`$TAG\`. Generated $(date '+%Y-%m-%d %H:%M %Z') by \`scripts/make_freeze_record.sh\`."
 echo
 echo "## Frozen commit"
 echo
@@ -52,6 +53,10 @@ echo "| \`bash scripts/rerun_analyses.sh\` | $RC_RERUN |"
 echo "| \`python scripts/rescore_sanitised.py\` | $RC_RESCORE |"
 echo "| \`python scripts/analyze_condition_c.py\` | $RC_DEF |"
 echo
+if [ "$RC_RERUN$RC_RESCORE$RC_DEF" != "000" ]; then
+    echo "**At least one step failed (non-zero exit code above); see logs/freeze_v1/. Not valid for tagging.**"
+    echo
+fi
 if [ -z "$CHANGED" ]; then
     echo "After the re-runs no tracked file changed: every \`results.json\`, table and figure reproduces byte for byte."
 else
@@ -98,6 +103,15 @@ echo '```'
 ( source "$ANALYSIS_VENV/bin/activate" && python --version && pip freeze ) 2>&1
 echo '```'
 echo
+echo "## Earlier archives (superseded)"
+echo
+echo "| Tag | Commit | Zenodo DOI | Why superseded |"
+echo "|---|---|---|---|"
+echo "| \`data-freeze-v1\` | 53b584f | 10.5281/zenodo.23547265 | before the review fixes and the licences |"
+echo "| \`data-freeze-v1.1\` | 366682b | 10.5281/zenodo.23547741 | licences, but not the Condition-C Wilson-over-events fix or the stricter freeze check |"
+echo
+echo "Both stay on Zenodo as older versions. This record describes \`$TAG\`; the paper cites its version DOI. The concept DOI 10.5281/zenodo.23547264 resolves to the latest version."
+echo
 echo "## Which machine ran which runs"
 echo
 echo "| Runs | Machine |"
@@ -119,4 +133,8 @@ echo "- Smoke and test outputs in \`results/runs/\` that are untracked (e.g. \`d
 echo
 echo "Wrote $OUT"
 echo "rerun_analyses=$RC_RERUN rescore_sanitised=$RC_RESCORE analyze_condition_c=$RC_DEF"
-if [ -z "$CHANGED" ]; then echo "Byte-for-byte: OK (no tracked file changed)"; else echo "CHANGED FILES:"; echo "$CHANGED"; fi
+STATUS=0
+if [ "$RC_RERUN$RC_RESCORE$RC_DEF" != "000" ]; then echo "FAILED: at least one step exited non-zero (see $LOGDIR/)"; STATUS=1; fi
+if [ -z "$CHANGED" ]; then echo "Byte-for-byte: OK (no tracked file changed)"; else echo "CHANGED FILES:"; echo "$CHANGED"; STATUS=1; fi
+if [ $STATUS -eq 0 ]; then echo "FREEZE CHECK: PASS"; else echo "FREEZE CHECK: FAIL"; fi
+exit $STATUS
