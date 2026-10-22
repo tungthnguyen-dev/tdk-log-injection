@@ -1,8 +1,8 @@
 #!/bin/bash
-# Build docs/freeze_record_v1.md: the record behind the data-freeze-v1 tag.
+# Build docs/freeze_record_v1.md: the record behind the data-freeze tag named in $TAG (default data-freeze-v1.2).
 # Run from the repo root on an up-to-date main, with every PR merged and a clean working tree.
 #
-#   RUNNER_VENV=.venv ANALYSIS_VENV=~/venvs/tdk-detector bash scripts/make_freeze_record.sh
+#   RUNNER_VENV=.venv ANALYSIS_VENV=~/venvs/tdk-detector TAG=data-freeze-v1.2 bash scripts/make_freeze_record.sh
 #
 # It re-runs the analyses and checks that no tracked file changes (byte-for-byte reproduction).
 # Nothing is committed or tagged by this script.
@@ -11,6 +11,7 @@ set -u
 cd "$(dirname "$0")/.." || exit 1
 RUNNER_VENV="${RUNNER_VENV:-.venv}"
 ANALYSIS_VENV="${ANALYSIS_VENV:-$HOME/venvs/tdk-detector}"
+TAG="${TAG:-data-freeze-v1.2}"
 OUT=docs/freeze_record_v1.md
 LOGDIR=logs/freeze_v1
 mkdir -p "$LOGDIR" docs
@@ -37,7 +38,7 @@ CHANGED=$(git status --porcelain --untracked-files=no)
 {
 echo "# Freeze record v1"
 echo
-echo "Record behind the git tag \`data-freeze-v1\`. Generated $(date '+%Y-%m-%d %H:%M %Z') by \`scripts/make_freeze_record.sh\`."
+echo "Record behind the git tag \`$TAG\`. Generated $(date '+%Y-%m-%d %H:%M %Z') by \`scripts/make_freeze_record.sh\`."
 echo
 echo "## Frozen commit"
 echo
@@ -102,14 +103,23 @@ echo '```'
 ( source "$ANALYSIS_VENV/bin/activate" && python --version && pip freeze ) 2>&1
 echo '```'
 echo
+echo "## Earlier archives (superseded)"
+echo
+echo "| Tag | Commit | Zenodo DOI | Why superseded |"
+echo "|---|---|---|---|"
+echo "| \`data-freeze-v1\` | 53b584f | 10.5281/zenodo.23547265 | before the review fixes and the licences |"
+echo "| \`data-freeze-v1.1\` | 366682b | 10.5281/zenodo.23547741 | licences, but not the Condition-C Wilson-over-events fix or the stricter freeze check |"
+echo
+echo "Both stay on Zenodo as older versions. This record describes \`$TAG\`; the paper cites its version DOI. The concept DOI 10.5281/zenodo.23547264 resolves to the latest version."
+echo
 echo "## Which machine ran which runs"
 echo
 echo "| Runs | Machine |"
 echo "|---|---|"
 echo "| All local Ollama runs: gemma4:e2b, e4b, 12b, qwen3.5:9b (A/B/C, v2 arms, ladder, B'+BCLEAN, SR-BH) | T. H. T. Nguyen's MacBook Pro (machine above) |"
-echo "| Claude Haiku 4.5, Haiku 5.5, Gemini 2.5 Flash, Gemini 3.6 Flash (cloud APIs) | B. Abdullaev's laptop: [fill in model and macOS version] |"
+echo "| Claude Haiku 4.5, Haiku 5.5, Gemini 2.5 Flash, Gemini 3.6 Flash (cloud APIs) | B. Abdullaev's MacBook Air (Apple M4), macOS 26.7.1; Python 3.14.8, anthropic 0.125.0, google-genai 2.31.0 |"
 echo
-echo "Each result row also stores the runner commit, prompt hash, model digest or reported model version, and the parameters actually sent."
+echo "The 8 result files from 8-9 Oct (Claude Haiku 4.5 v1 and gemma4 e2b/e4b/12b A/B/C, each with its benign-control file) were written by the earlier runner and store the prompt version and hash only; their settings are documented in \`README.md\` and \`docs/threat_model.md\` (pre-registration Section 8). All later rows also store the runner commit, backend version, model digest or reported model version, and the parameters actually sent."
 echo
 echo "## Not in the repository"
 echo
